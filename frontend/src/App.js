@@ -25,12 +25,13 @@
 // export default App;
 
 import React from 'react';
-import ClientList from './components/ClientList';
+import Clients from './components/Clients';
 
 function App() {
     return (
         <div className="App">
-            <ClientList />
+            <h1>Gestión de Clientes</h1>
+            <Clients />
         </div>
     );
 }
