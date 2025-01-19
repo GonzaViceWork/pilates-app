@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from .models import Client, Session, Package
-from .serializers import ClientSerializer, SessionSerializer, PackageSerializer
+from .models import Client, Session, Package, SessionPack
+from .serializers import ClientSerializer, SessionSerializer, \
+        PackageSerializer, SessionPackSerializer
 
 # Create your views here.
 class ClientViewSet(viewsets.ModelViewSet):
@@ -15,3 +16,7 @@ class SessionViewSet(viewsets.ModelViewSet):
 class PackageViewSet(viewsets.ModelViewSet):
     queryset = Package.objects.all()
     serializer_class = PackageSerializer
+
+class SessionPackViewSet(viewsets.ModelViewSet):
+    queryset = SessionPack.objects.all()
+    serializer_class = SessionPackSerializer

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
 
-const ClientList = ({ onEdit }) => {
+const ClientList = ({ onEdit, onSelect }) => {
     const [clients, setClients] = useState([]);
 
     useEffect(() => {
@@ -34,6 +34,7 @@ const ClientList = ({ onEdit }) => {
                     <li key={client.id}>
                         {client.name} - {client.email} 
                         <button onClick={() => onEdit(client)}>Editar</button>
+                        <button onClick={() => onSelect(client)}>Seleccionar</button>
                         <button onClick={() => deleteClient(client.id)}>Eliminar</button>
                     </li>
                 ))}

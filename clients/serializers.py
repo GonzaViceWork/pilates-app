@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Client, Session, Package
+from .models import Client, Session, Package, SessionPack
 
 class ClientSerializer(serializers.ModelSerializer):
     remaining_sessions = serializers.ReadOnlyField()
@@ -16,8 +16,12 @@ class SessionSerializer(serializers.ModelSerializer):
         model = Session
         fields = ['id', 'session_type', 'session_type_display', 'clients', 'date', 'attended']
 
-
 class PackageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Package
         fields = ['id', 'name', 'description', 'price', 'total_sessions']
+
+class SessionPackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SessionPack
+        fields = ['id', 'client', 'date', 'sessions_added', 'sessions_deducted', 'note']
