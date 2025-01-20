@@ -9,12 +9,13 @@ class ClientSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'email', 'phone', 'total_sessions', 'used_sessions', 'remaining_sessions']
 
 class SessionSerializer(serializers.ModelSerializer):
-    clients = ClientSerializer(many=True, read_only=True)
-    session_type_display = serializers.CharField(source='get_session_type_display', read_only=True)
+    clients = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Client.objects.all()
+    )
 
     class Meta:
         model = Session
-        fields = ['id', 'session_type', 'session_type_display', 'clients', 'date', 'attended']
+        fields = ['id', 'date', 'session_type', 'clients', 'attended_clients']
 
 class PackageSerializer(serializers.ModelSerializer):
     class Meta:

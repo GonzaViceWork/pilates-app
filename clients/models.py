@@ -47,13 +47,12 @@ class Session(models.Model):
         choices=SESSION_TYPE_CHOICES,
         default='group',
     )
-    clients = models.ManyToManyField(Client, related_name="sessions", blank=True)
+    clients = models.ManyToManyField(Client, related_name="sessions")
     date = models.DateTimeField()
-    attended = models.BooleanField(default=False)
+    attended_clients = models.ManyToManyField(Client, related_name="attended_sessions", blank=True)
 
     def __str__(self):
-        clients_names = ", ".join([client.name for client in self.clients.all()])
-        return f"{self.get_session_type_display()} - {clients_names} - {self.date.strftime('%Y-%m-%d %H:%M')}"
+        return f"{self.get_session_type_display()} - {self.date.strftime('%Y-%m-%d %H:%M')}"
 
 
 class SessionPack(models.Model):
