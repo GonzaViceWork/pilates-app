@@ -1,12 +1,18 @@
 from rest_framework import serializers
-from .models import Client, Session, Package, SessionPack
+from .models import Client, Session, Package, SessionPack, AttendanceLog
+
+
+class AttendanceLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AttendanceLog
+        fields = ['action', 'slots', 'date', 'description']
 
 class ClientSerializer(serializers.ModelSerializer):
-    remaining_sessions = serializers.ReadOnlyField()
+    credit_logs = AttendanceLogSerializer(many=True, read_only=True)
 
     class Meta:
         model = Client
-        fields = ['id', 'name', 'email', 'phone', 'total_sessions', 'used_sessions', 'remaining_sessions']
+        fields = ['id', 'first_name', 'last_name', 'email', 'phone', 'available_slots', 'credit_logs']
 
 class SessionSerializer(serializers.ModelSerializer):
     clients = serializers.PrimaryKeyRelatedField(

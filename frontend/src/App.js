@@ -27,6 +27,7 @@
 import React from 'react';
 import Clients from './components/Clients';
 import Sessions from './components/Sessions';
+import ClientPage from './pages/ClientPage';
 
 function App() {
     return (
@@ -36,6 +37,9 @@ function App() {
 
             <h1>Gestión de Sesiones</h1>
             <Sessions />
+
+            <h1>Página de Clientes</h1>
+            <ClientPage />
         </div>
     );
 }

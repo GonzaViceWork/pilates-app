@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import api from '../api/axios';
 
 const ClientForm = ({ client, onSave }) => {
-    const [name, setName] = useState(client ? client.name : '');
+    const [first_name, setFirstName] = useState(client ? client.first_name : '');
+    const [last_name, setLastName] = useState(client ? client.last_name : '');
     const [email, setEmail] = useState(client ? client.email : '');
     const [phone, setPhone] = useState(client ? client.phone : '');
-    const [totalSessions, setTotalSessions] = useState(client ? client.total_sessions : 0);
+    const [availableSlots, setAvailableSlots] = useState(client ? client.available_slots : 0);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const clientData = { name, email, phone, total_sessions: totalSessions };
+        const clientData = { first_name, last_name, email, phone, available_slots: availableSlots };
 
         try {
             if (client) {
@@ -30,7 +31,11 @@ const ClientForm = ({ client, onSave }) => {
             <h2>{client ? 'Editar Cliente' : 'Crear Cliente'}</h2>
             <div>
                 <label>Nombre:</label>
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+                <input type="text" value={first_name} onChange={(e) => setFirstName(e.target.value)} required />
+            </div>
+            <div>
+                <label>Apellido:</label>
+                <input type="text" value={last_name} onChange={(e) => setLastName(e.target.value)} required />
             </div>
             <div>
                 <label>Email:</label>
@@ -42,7 +47,7 @@ const ClientForm = ({ client, onSave }) => {
             </div>
             <div>
                 <label>Total de sesiones:</label>
-                <input type="number" value={totalSessions} onChange={(e) => setTotalSessions(e.target.value)} min="0" />
+                <input type="number" value={availableSlots} onChange={(e) => setAvailableSlots(e.target.value)} min="0" />
             </div>
             <button type="submit">Guardar</button>
         </form>

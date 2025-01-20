@@ -24,7 +24,7 @@ const Clients = () => {
             <ClientForm client={editingClient} onSave={handleSave} />
             {selectedClient && (
                 <>
-                    <h2>Cliente: {selectedClient.name}</h2>
+                    <h2>Cliente: {selectedClient.first_name}</h2>
                     <SessionPackList clientId={selectedClient.id} />
                     <SessionPackForm
                         clientId={selectedClient.id}

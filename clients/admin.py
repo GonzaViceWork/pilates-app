@@ -1,62 +1,37 @@
 from django.contrib import admin
-from .models import Client, Session, Package, SessionPack
-from .forms import AddSessionsForm
+from .models import Client, Session, Package, AttendanceLog
 
-# Función personalizada para mostrar las sesiones restantes
-def remaining_sessions(client):
-    return client.remaining_sessions()
-
-remaining_sessions.short_description = 'Sesiones Restantes'
-
+# Personalización de la interfaz del modelo Client
+@admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ['name', 'email', 'phone', 'total_sessions', 'used_sessions', remaining_sessions]
-    search_fields = ['name', 'email']
-    actions = ['add_sessions_action', 'deduct_sessions_action']  # Define las acciones directamente aquí
+    list_display = ("first_name", "last_name", "email", "phone", "available_slots")
+    search_fields = ("first_name", "last_name", "email")
+    list_filter = ("available_slots",)
+    ordering = ("last_name", "first_name")
 
-    # Acción para añadir sesiones a un cliente
-    def add_sessions_action(self, request, queryset):
-        amount = request.POST.get('amount', 0)
-        for client in queryset:
-            client.add_sessions(int(amount))
-        self.message_user(request, f'Se han añadido {amount} sesiones a los clientes seleccionados.')
-
-    # Acción para descontar sesiones a un cliente
-    def deduct_sessions_action(self, request, queryset):
-        amount = request.POST.get('amount', 0)
-        for client in queryset:
-            try:
-                client.deduct_sessions(int(amount))
-                self.message_user(request, f'Se han descontado {amount} sesiones a los clientes seleccionados.')
-            except ValueError:
-                self.message_user(request, 'No hay suficientes sesiones para descontar.', level='error')
-
-    # Definir descripciones para las acciones
-    add_sessions_action.short_description = 'Añadir sesiones'
-    deduct_sessions_action.short_description = 'Descontar sesiones'
-
+# Personalización de la interfaz del modelo Session
+@admin.register(Session)
 class SessionAdmin(admin.ModelAdmin):
-    list_display = ['get_clients', 'session_type', 'date', 'has_attended']
-    list_filter = ['session_type', 'date']  # Remover attended_clients de list_filter
-    search_fields = ['clients__name', 'clients__email']
+    list_display = ("date", "session_type", "get_clients")
+    search_fields = ("date",)
+    list_filter = ("session_type",)
+    ordering = ("date",)
 
     def get_clients(self, obj):
-        return ", ".join([client.name for client in obj.clients.all()])
-    get_clients.short_description = 'Clientes'
+        return ", ".join([f"{client.first_name} {client.last_name}" for client in obj.clients.all()])
+    get_clients.short_description = "Clientes asignados"
 
-    def has_attended(self, obj):
-        return ", ".join([client.name for client in obj.attended_clients.all()])
-    has_attended.short_description = 'Clientes Asistentes'
-
+# Personalización de la interfaz del modelo Package
+@admin.register(Package)
 class PackageAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price', 'total_sessions']
-    search_fields = ['name']
+    list_display = ("name", "slot_count")
+    search_fields = ("name",)
+    ordering = ("slot_count",)
 
-class SessionPackAdmin(admin.ModelAdmin):
-    list_display = ['client', 'sessions_added', 'sessions_deducted', 'date', 'note']
-    search_fields = ['client__name', 'note']
-    list_filter = ['date']
-
-admin.site.register(Client, ClientAdmin)
-admin.site.register(Session, SessionAdmin)
-admin.site.register(Package, PackageAdmin)
-admin.site.register(SessionPack, SessionPackAdmin)
+# Personalización de la interfaz del modelo AttendanceLog
+@admin.register(AttendanceLog)
+class AttendanceLogAdmin(admin.ModelAdmin):
+    list_display = ("client", "action", "slots", "date")
+    search_fields = ("client__first_name", "client__last_name", "action")
+    list_filter = ("action", "date")
+    ordering = ("date",)

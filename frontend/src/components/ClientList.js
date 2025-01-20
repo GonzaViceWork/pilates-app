@@ -32,7 +32,7 @@ const ClientList = ({ onEdit, onSelect }) => {
             <ul>
                 {clients.map((client) => (
                     <li key={client.id}>
-                        {client.name} - {client.email} 
+                        {client.first_name} {client.last_name} - {client.email} - Slots: {client.available_slots} 
                         <button onClick={() => onEdit(client)}>Editar</button>
                         <button onClick={() => onSelect(client)}>Seleccionar</button>
                         <button onClick={() => deleteClient(client.id)}>Eliminar</button>

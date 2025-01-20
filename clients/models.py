@@ -2,54 +2,63 @@ from django.db import models
 
 # Create your models here.
 class Client(models.Model):
-    name = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=15, blank=True, null=True)
-    total_sessions = models.PositiveIntegerField(default=0)
-    used_sessions = models.PositiveIntegerField(default=0)
-
-    def remaining_sessions(self):
-        return self.total_sessions - self.used_sessions
+    available_slots = models.PositiveIntegerField(default=0)  # Cupos disponibles
 
     def __str__(self):
-        return self.name
-    
-    def add_sessions(self, amount):
-        self.total_sessions += amount
-        self.save()
-    
-    def deduct_sessions(self, amount):
-        if self.remaining_sessions() >= amount:
-            self.used_sessions += amount
-            self.save()
-        else:
-            raise ValueError("No se pueden descontar más sesiones de las disponibles.")  
+        return f"{self.first_name} {self.last_name}"
+
+
+class AttendanceLog(models.Model):
+    ACTION_TYPES = [
+        ("add", "Paquete Asignado"),
+        ("deduct", "Clase Asistida"),
+    ]
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="attendance_logs")
+    action = models.CharField(max_length=10, choices=ACTION_TYPES)  # "Paquete asignado" o "Clase asistida"
+    slots = models.IntegerField()  # Positivo o negativo
+    date = models.DateTimeField(auto_now_add=True)  # Fecha y hora del cambio
+    description = models.TextField(blank=True)  # Nombre del paquete o clase asistida
+
+    def __str__(self):
+        return f"{self.client} - {self.action} ({self.slots})"
 
 
 class Package(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    total_sessions = models.PositiveIntegerField()
+    slot_count = models.PositiveIntegerField()
 
     def __str__(self):
-        return f"{self.name} - {self.price} ({self.total_sessions} sesiones)"
+        return self.name
 
 
 class Session(models.Model):
-    SESSION_TYPE_CHOICES = [
+    SESSION_TYPES = [
         ('group', 'Grupal'),
         ('private', 'Privada'),
     ]
 
-    session_type = models.CharField(
-        max_length=10,
-        choices=SESSION_TYPE_CHOICES,
-        default='group',
-    )
     clients = models.ManyToManyField(Client, related_name="sessions")
     date = models.DateTimeField()
+    session_type = models.CharField(max_length=10, choices=SESSION_TYPES, default='group')
     attended_clients = models.ManyToManyField(Client, related_name="attended_sessions", blank=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Registrar asistencia y descontar cupos
+        for client in self.attended_clients.all():
+            if client.available_credits > 0:
+                client.available_credits -= 1
+                client.save()
+                AttendanceLog.objects.create(
+                    client=client,
+                    action="deduct",
+                    slots=-1,
+                    description=f"Sesión {self.get_session_type_display()} - {self.date}",
+                )
 
     def __str__(self):
         return f"{self.get_session_type_display()} - {self.date.strftime('%Y-%m-%d %H:%M')}"
