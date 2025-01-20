@@ -24,24 +24,24 @@
 
 // export default App;
 
-import React from 'react';
-import Clients from './components/Clients';
-import Sessions from './components/Sessions';
-import ClientPage from './pages/ClientPage';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import ClientsPage from "./pages/ClientsPage";
+import ClientDetailPage from "./pages/ClientDetailPage";
+import CreateClientPage from "./pages/CreateClientPage";
 
-function App() {
+const App = () => {
     return (
-        <div className="App">
-            <h1>Gestión de Clientes</h1>
-            <Clients />
-
-            <h1>Gestión de Sesiones</h1>
-            <Sessions />
-
-            <h1>Página de Clientes</h1>
-            <ClientPage />
-        </div>
+        <Router>
+            <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/clients/" element={<ClientsPage />} />
+                <Route path="/clients/new/" element={<CreateClientPage />} />
+                <Route path="/clients/:client_id/" element={<ClientDetailPage />} />
+            </Routes>
+        </Router>
     );
-}
+};
 
 export default App;
