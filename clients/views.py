@@ -34,6 +34,10 @@ class SessionViewSet(viewsets.ModelViewSet):
     queryset = Session.objects.all()
     serializer_class = SessionSerializer
 
+    def create(self, request, *args, **kwargs):
+        # Aquí puedes hacer validaciones o ajustes si es necesario
+        return super().create(request, *args, **kwargs)
+
 class PackageViewSet(viewsets.ModelViewSet):
     queryset = Package.objects.all()
     serializer_class = PackageSerializer

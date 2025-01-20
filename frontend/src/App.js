@@ -30,6 +30,9 @@ import HomePage from "./pages/HomePage";
 import ClientsPage from "./pages/ClientsPage";
 import ClientDetailPage from "./pages/ClientDetailPage";
 import CreateClientPage from "./pages/CreateClientPage";
+import CalendarPage from "./pages/CalendarPage";
+import CreateSessionPage from "./pages/CreateSessionPage"; // Importar la nueva página
+import SessionDetailPage from "./pages/SessionDetailPage";
 
 const App = () => {
     return (
@@ -39,6 +42,9 @@ const App = () => {
                 <Route path="/clients/" element={<ClientsPage />} />
                 <Route path="/clients/new/" element={<CreateClientPage />} />
                 <Route path="/clients/:client_id/" element={<ClientDetailPage />} />
+                <Route path="/calendar/" element={<CalendarPage />} />
+                <Route path="/calendar/new" element={<CreateSessionPage />} /> {/* Ruta para crear sesión */}
+                <Route path="/calendar/:session_id/" element={<SessionDetailPage />} />
             </Routes>
         </Router>
     );
