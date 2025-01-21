@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import api from "../api/axios";
@@ -10,109 +10,66 @@ const localizer = momentLocalizer(moment);
 
 const CalendarPage = () => {
     const [sessions, setSessions] = useState([]);
-    const [clients, setClients] = useState([]); // Estado para los clientes
-    const [newEvent, setNewEvent] = useState({
-        title: "",
-        start: new Date(),
-        end: new Date(),
-        session_type: "group",
-        clients: [], // Inicializar como un array vacío
-    });
+    const navigate = useNavigate(); // Hook para navegar a otras páginas
 
     useEffect(() => {
         fetchSessions();
-        fetchClients(); // Llamar a la función que obtiene los clientes
     }, []);
 
     const fetchSessions = async () => {
         try {
             const response = await api.get("/sessions/");
-            const formattedSessions = response.data.map((session) => ({
-                ...session,
-                start: new Date(session.date),
-                end: new Date(session.date),
-            }));
+            const formattedSessions = response.data.map((session) => {
+                const sessionDate = moment(session.date).format("DD/MM/YYYY HH:mm"); // Formato de fecha legible
+                return {
+                    ...session,
+                    title: `Sesión ${session.session_type} - ${sessionDate}`,
+                    start: new Date(session.date),
+                    end: new Date(session.date),
+                };
+            });
             setSessions(formattedSessions);
         } catch (error) {
             console.error("Error al obtener las sesiones:", error);
         }
     };
 
-    const fetchClients = async () => {
-        try {
-            const response = await api.get("/clients/"); // Asegúrate de que la ruta sea correcta
-            setClients(response.data); // Establecer los clientes en el estado
-        } catch (error) {
-            console.error("Error al obtener los clientes:", error);
-        }
-    };
-
-    const handleSelectSlot = ({ start, end }) => {
-        setNewEvent({
-            ...newEvent,
-            start,
-            end,
-        });
-    };
-
-    const handleCreateSession = async () => {
-        try {
-            await api.post("/sessions/", {
-                ...newEvent,
-                date: newEvent.start.toISOString(),
-            });
-            fetchSessions(); // Recargar sesiones
-            setNewEvent({ title: "", start: new Date(), end: new Date(), session_type: "group", clients: [] });
-        } catch (error) {
-            console.error("Error al crear la sesión:", error);
-        }
-    };
-
     const handleSelectEvent = (event) => {
-        setNewEvent({
-            ...event,
-            start: new Date(event.start),
-            end: new Date(event.end),
-        });
-    };
-
-    const handleUpdateSession = async () => {
-        try {
-            await api.put(`/sessions/${newEvent.id}/`, {
-                ...newEvent,
-                date: newEvent.start.toISOString(),
-            });
-            fetchSessions();
-        } catch (error) {
-            console.error("Error al actualizar la sesión:", error);
-        }
-    };
-
-    const handleDeleteSession = async () => {
-        try {
-            await api.delete(`/sessions/${newEvent.id}/`);
-            fetchSessions();
-            setNewEvent({ title: "", start: new Date(), end: new Date(), session_type: "group", clients: [] });
-        } catch (error) {
-            console.error("Error al eliminar la sesión:", error);
-        }
+        navigate(`/calendar/${event.id}/`); // Redirige al detalle de la sesión
     };
 
     return (
         <div>
             <h1>Calendario de Sesiones</h1>
+            
+            {/* Título para el link de nueva sesión */}
+            <h3>Acciones</h3>
             <Link to="/calendar/new/">Crear nueva sesión</Link>
 
             {/* Renderizar calendario */}
+            <h3>Calendario de Sesiones</h3>
             <Calendar
                 localizer={localizer}
                 events={sessions}
                 startAccessor="start"
                 endAccessor="end"
-                onSelectSlot={handleSelectSlot}
                 onSelectEvent={handleSelectEvent}
+                style={{ height: 500, margin: "50px 0" }}
                 selectable
                 views={["month", "week", "day"]}
+                messages={{
+                    today: "Hoy",
+                    previous: "Anterior",
+                    next: "Siguiente",
+                    month: "Mes",
+                    week: "Semana",
+                    day: "Día",
+                    agenda: "Agenda",
+                    date: "Fecha",
+                    time: "Hora",
+                    event: "Evento",
+                }}
+                firstDayOfWeek={1} // La semana comienza el lunes
             />
         </div>
     );

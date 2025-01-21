@@ -9,7 +9,7 @@ const HomePage = () => {
             <nav>
                 <ul>
                     <li><Link to="/clients/">Gestión de Clientes</Link></li>
-                    <li><Link to="/calendar/">Calendario</Link></li>
+                    <li><Link to="/calendar/">Calendario de Sesiones</Link></li>
                 </ul>
             </nav>
         </div>
