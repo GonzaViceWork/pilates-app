@@ -114,59 +114,6 @@ const CalendarPage = () => {
                 selectable
                 views={["month", "week", "day"]}
             />
-
-            {/* Formulario para crear/editar sesión */}
-            <h2>{newEvent.id ? "Actualizar sesión" : "Crear nueva sesión"}</h2>
-            <form>
-                <label>
-                    Fecha y Hora:
-                    <input
-                        type="datetime-local"
-                        value={newEvent.start.toISOString().slice(0, 16)} // Convertir a formato compatible
-                        onChange={(e) =>
-                            setNewEvent({
-                                ...newEvent,
-                                start: new Date(e.target.value),
-                            })
-                        }
-                    />
-                </label>
-
-                <label>
-                    Tipo de clase:
-                    <select
-                        value={newEvent.session_type}
-                        onChange={(e) => setNewEvent({ ...newEvent, session_type: e.target.value })}
-                    >
-                        <option value="group">Grupal</option>
-                        <option value="private">Privada</option>
-                    </select>
-                </label>
-
-                {/* Formulario para asignar clientes */}
-                <label>
-                    Asignar clientes:
-                    <select
-                        multiple
-                        value={newEvent.clients}
-                        onChange={(e) => {
-                            const selectedClients = Array.from(e.target.selectedOptions, option => option.value);
-                            setNewEvent({ ...newEvent, clients: selectedClients });
-                        }}
-                    >
-                        {/* Aquí cargamos los clientes desde el estado */}
-                        {clients.map(client => (
-                            <option key={client.id} value={client.id}>
-                                {client.first_name} {client.last_name}
-                            </option>
-                        ))}
-                    </select>
-                </label>
-
-                <button type="button" onClick={handleCreateSession}>
-                    Crear sesión
-                </button>
-            </form>
         </div>
     );
 };

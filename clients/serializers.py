@@ -26,7 +26,7 @@ class SessionSerializer(serializers.ModelSerializer):
 class PackageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Package
-        fields = ['id', 'name', 'description', 'price', 'total_sessions']
+        fields = ["id", "name", "slot_count"]
 
 class SessionPackSerializer(serializers.ModelSerializer):
     class Meta:

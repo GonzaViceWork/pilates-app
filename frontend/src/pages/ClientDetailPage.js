@@ -1,47 +1,94 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import moment from "moment";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 import api from "../api/axios";
 
 const ClientDetailPage = () => {
     const { client_id } = useParams();
     const [client, setClient] = useState(null);
     const [sessions, setSessions] = useState([]);
+    const [attendanceLogs, setAttendanceLogs] = useState([]);
+    const [packages, setPackages] = useState([]); // Lista de paquetes disponibles
+    const [selectedPackage, setSelectedPackage] = useState(""); // Paquete seleccionado
 
-    useEffect(() => {
-        fetchClient();
-        fetchSessions();
-    }, []);
+    const localizer = momentLocalizer(moment);
 
-    const fetchClient = async () => {
+    const fetchClient = useCallback(async () => {
         try {
             const response = await api.get(`/clients/${client_id}/`);
             setClient(response.data);
         } catch (error) {
             console.error("Error al obtener el cliente:", error);
         }
-    };
+    }, [client_id]);
 
-    const fetchSessions = async () => {
+    const fetchSessions = useCallback(async () => {
         try {
             const response = await api.get(`/sessions/?client_id=${client_id}`);
-            setSessions(response.data);
+            // Filtrar sesiones asignadas al cliente
+            const assignedSessions = response.data.filter(session =>
+                session.clients?.includes(parseInt(client_id))
+            );
+            setSessions(assignedSessions);
         } catch (error) {
             console.error("Error al obtener las sesiones:", error);
         }
-    };
+    }, [client_id]);
 
-    const handleAssignSession = async (sessionId) => {
+    const fetchAttendanceLogs = useCallback(async () => {
         try {
-            await api.post(`/sessions/${sessionId}/assign/`, { client_id });
-            fetchSessions();
+            const response = await api.get(`/clients/${client_id}/attendance_logs/`);
+            setAttendanceLogs(response.data);
         } catch (error) {
-            console.error("Error al asignar sesión:", error);
+            console.error("Error al obtener los registros de créditos:", error);
+        }
+    }, [client_id]);
+
+    const fetchPackages = async () => {
+        try {
+            const response = await api.get("/packages/");
+            setPackages(response.data);
+        } catch (error) {
+            console.error("Error al obtener los paquetes:", error);
         }
     };
+
+    const handleAddPackage = async () => {
+        if (!selectedPackage) {
+            alert("Por favor, selecciona un paquete.");
+            return;
+        }
+        try {
+            await api.post(`/clients/${client_id}/assign_package/`, {
+                package_id: selectedPackage,
+            });
+            fetchClient(); // Refrescar los datos del cliente
+            fetchAttendanceLogs(); // Refrescar los registros de créditos
+            alert("Paquete asignado correctamente.");
+        } catch (error) {
+            console.error("Error al asignar el paquete:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchClient();
+        fetchSessions();
+        fetchAttendanceLogs();
+        fetchPackages();
+    }, [fetchClient, fetchSessions, fetchAttendanceLogs]);
 
     if (!client) {
         return <div>Cargando cliente...</div>;
     }
+
+    const events = sessions.map(session => ({
+        id: session.id,
+        title: `${session.session_type} - ${session.date}`,
+        start: new Date(session.date),
+        end: new Date(session.date), // Puedes ajustar la duración según sea necesario
+    }));
 
     return (
         <div>
@@ -53,24 +100,28 @@ const ClientDetailPage = () => {
             <p>Teléfono: {client.phone}</p>
             <p>Cupos disponibles: {client.available_slots}</p>
 
-            {/* Sesiones */}
+            {/* Calendario de sesiones */}
             <h3>Calendario de Sesiones</h3>
-            <ul>
-                {sessions.length > 0 ? (
-                    sessions.map((session) => (
-                        <li key={session.id}>
-                            {session.date} - {session.session_type}{" "}
-                            {!session.clients?.includes(client_id) && (
-                                <button onClick={() => handleAssignSession(session.id)}>
-                                    Asignar a esta sesión
-                                </button>
-                            )}
-                        </li>
-                    ))
-                ) : (
-                    <li>No hay sesiones disponibles.</li>
-                )}
-            </ul>
+            <Calendar
+                localizer={localizer}
+                events={events}
+                startAccessor="start"
+                endAccessor="end"
+                style={{ height: 500, margin: "50px 0" }}
+                firstDayOfWeek={1}
+                messages={{
+                    today: "Hoy",
+                    previous: "Anterior",
+                    next: "Siguiente",
+                    month: "Mes",
+                    week: "Semana",
+                    day: "Día",
+                    agenda: "Agenda",
+                    date: "Fecha",
+                    time: "Hora",
+                    event: "Evento",
+                }}
+            />
 
             {/* Registro de créditos */}
             <h3>Registro de Créditos</h3>
@@ -84,10 +135,10 @@ const ClientDetailPage = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {client.attendance_logs?.length > 0 ? (
-                        client.attendance_logs.map((log) => (
+                    {attendanceLogs.length > 0 ? (
+                        attendanceLogs.map((log) => (
                             <tr key={log.date}>
-                                <td>{log.action}</td>
+                                <td>{log.action === "add" ? "Paquete Asignado" : "Clase Asistida"}</td>
                                 <td>{log.slots}</td>
                                 <td>{log.description}</td>
                                 <td>{new Date(log.date).toLocaleString()}</td>
@@ -100,6 +151,24 @@ const ClientDetailPage = () => {
                     )}
                 </tbody>
             </table>
+
+            {/* Asignar un paquete */}
+            <h3>Asignar Paquete</h3>
+            <div>
+                <select
+                    value={selectedPackage}
+                    onChange={(e) => setSelectedPackage(e.target.value)}
+                >
+                    <option value="">Selecciona un paquete</option>
+                    {packages.map((pkg) => (
+                        <option key={pkg.id} value={pkg.id}>
+                            {pkg.name} ({pkg.slot_count} cupos)
+                        </option>
+                    ))}
+                </select>
+                <button onClick={handleAddPackage}>Asignar Paquete</button>
+            </div>
+
         </div>
     );
 };
