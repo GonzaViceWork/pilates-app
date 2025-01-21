@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // Cambiar de useHistory a useNavigate
+import moment from "moment-timezone";
 import api from "../api/axios";
 
 const CreateSessionPage = () => {
     const [newEvent, setNewEvent] = useState({
-        date: new Date(),
+        date: moment().tz("America/Lima").format("YYYY-MM-DDTHH:mm"), // Fecha inicial en la zona horaria de Lima
         session_type: "group", // Valor por defecto
         clients: [], // Lista de clientes asignados
     });
     const [clients, setClients] = useState([]); // Lista de todos los clientes
-    const navigate = useNavigate(); // Cambiar de useHistory a useNavigate
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Aquí deberías cargar los clientes desde la API para mostrarlos en el select
@@ -26,17 +27,28 @@ const CreateSessionPage = () => {
 
     const handleCreateSession = async () => {
         try {
-            const response = await api.post("/sessions/", {
-                date: newEvent.date.toISOString(),
+            // Convertir la fecha a UTC antes de enviarla al backend
+            const utcDate = moment.tz(newEvent.date, "America/Lima").utc().format();
+            await api.post("/sessions/", {
+                date: utcDate,
                 session_type: newEvent.session_type,
-                clients: newEvent.clients, // Lista de clientes asignados
+                clients: newEvent.clients,
             });
-
-            // Redirigir al calendario después de crear la sesión
             navigate("/calendar/");
         } catch (error) {
             console.error("Error al crear la sesión:", error);
         }
+    };
+
+    const formatDateForInput = (date) => {
+        // Formatear la fecha para el input de tipo datetime-local
+        return date.toISOString().slice(0, 16);
+    };
+
+    const handleDateChange = (e) => {
+        // Convertir la fecha seleccionada en el input a un objeto Date local
+        const selectedDate = new Date(e.target.value);
+        setNewEvent({ ...newEvent, date: selectedDate });
     };
 
     return (
@@ -47,11 +59,11 @@ const CreateSessionPage = () => {
                     Fecha y Hora:
                     <input
                         type="datetime-local"
-                        value={newEvent.date.toISOString().slice(0, 16)} // Convertir a formato compatible
+                        value={newEvent.date}
                         onChange={(e) =>
                             setNewEvent({
                                 ...newEvent,
-                                date: new Date(e.target.value),
+                                date: e.target.value, // Captura la fecha directamente como string
                             })
                         }
                     />
@@ -61,7 +73,9 @@ const CreateSessionPage = () => {
                     Tipo de clase:
                     <select
                         value={newEvent.session_type}
-                        onChange={(e) => setNewEvent({ ...newEvent, session_type: e.target.value })}
+                        onChange={(e) =>
+                            setNewEvent({ ...newEvent, session_type: e.target.value })
+                        }
                     >
                         <option value="group">Grupal</option>
                         <option value="private">Privada</option>
@@ -75,12 +89,14 @@ const CreateSessionPage = () => {
                         multiple
                         value={newEvent.clients}
                         onChange={(e) => {
-                            const selectedClients = Array.from(e.target.selectedOptions, option => option.value);
+                            const selectedClients = Array.from(
+                                e.target.selectedOptions,
+                                (option) => option.value
+                            );
                             setNewEvent({ ...newEvent, clients: selectedClients });
                         }}
                     >
-                        {/* Aquí cargamos los clientes desde el estado */}
-                        {clients.map(client => (
+                        {clients.map((client) => (
                             <option key={client.id} value={client.id}>
                                 {client.first_name} {client.last_name}
                             </option>

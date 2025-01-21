@@ -41,7 +41,7 @@ class Session(models.Model):
         ('private', 'Privada'),
     ]
 
-    clients = models.ManyToManyField(Client, related_name="sessions")
+    clients = models.ManyToManyField(Client, related_name="sessions", blank=True)
     date = models.DateTimeField()
     session_type = models.CharField(max_length=10, choices=SESSION_TYPES, default='group')
     attended_clients = models.ManyToManyField(Client, related_name="attended_sessions", blank=True)
