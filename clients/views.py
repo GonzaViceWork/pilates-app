@@ -2,10 +2,10 @@ from django.shortcuts import render
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import viewsets, status
-from .models import Client, Session, Package, SessionPack, \
+from .models import Client, Session, Package, \
         AttendanceLog
 from .serializers import ClientSerializer, SessionSerializer, \
-        PackageSerializer, SessionPackSerializer
+        PackageSerializer
 
 # Create your views here.
 class ClientViewSet(viewsets.ModelViewSet):
@@ -67,7 +67,4 @@ class PackageViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Package.objects.all()
     serializer_class = PackageSerializer
 
-class SessionPackViewSet(viewsets.ModelViewSet):
-    queryset = SessionPack.objects.all()
-    serializer_class = SessionPackSerializer
 

@@ -62,14 +62,3 @@ class Session(models.Model):
 
     def __str__(self):
         return f"{self.get_session_type_display()} - {self.date.strftime('%Y-%m-%d %H:%M')}"
-
-
-class SessionPack(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="session_packs")
-    date = models.DateTimeField(auto_now_add=True)
-    sessions_added = models.PositiveIntegerField(default=0)
-    sessions_deducted = models.PositiveIntegerField(default=0)
-    note = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.client.name} - {self.sessions_added} added, {self.sessions_deducted} deducted on {self.date.strftime('%Y-%m-%d')}"

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Client, Session, Package, SessionPack, AttendanceLog
+from .models import Client, Session, Package, AttendanceLog
 
 
 class AttendanceLogSerializer(serializers.ModelSerializer):
@@ -27,8 +27,3 @@ class PackageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Package
         fields = ["id", "name", "slot_count"]
-
-class SessionPackSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SessionPack
-        fields = ['id', 'client', 'date', 'sessions_added', 'sessions_deducted', 'note']

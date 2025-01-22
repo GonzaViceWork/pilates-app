@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Cambiar de useHistory a useNavigate
+import { useNavigate } from "react-router-dom";
 import moment from "moment-timezone";
 import api from "../api/axios";
 
 const CreateSessionPage = () => {
     const [newEvent, setNewEvent] = useState({
-        date: moment().tz("America/Lima").format("YYYY-MM-DDTHH:mm"), // Fecha inicial en la zona horaria de Lima
-        session_type: "group", // Valor por defecto
-        clients: [], // Lista de clientes asignados
+        date: moment().tz("America/Lima").format("YYYY-MM-DDTHH:mm"), // Fecha inicial en Lima
+        session_type: "group",
+        clients: [], // Clientes seleccionados (IDs)
     });
     const [clients, setClients] = useState([]); // Lista de todos los clientes
+    const [selectedClients, setSelectedClients] = useState([]); // Clientes seleccionados con datos completos
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Aquí deberías cargar los clientes desde la API para mostrarlos en el select
         const fetchClients = async () => {
             try {
                 const response = await api.get("/clients/");
-                setClients(response.data); // Guardamos los clientes en el estado
+                setClients(response.data);
             } catch (error) {
                 console.error("Error al cargar los clientes:", error);
             }
@@ -25,36 +25,60 @@ const CreateSessionPage = () => {
         fetchClients();
     }, []);
 
+    const handleAddClient = (clientId) => {
+        if (!newEvent.clients.includes(clientId)) {
+            setNewEvent((prev) => {
+                const updatedClients = [...prev.clients, clientId];
+                return {
+                    ...prev,
+                    clients: updatedClients,
+                };
+            });
+    
+            const client = clients.find((c) => c.id === parseInt(clientId));
+            if (client) {
+                setSelectedClients((prev) => [...prev, client]);
+            }
+        }
+    };
+
+    const handleRemoveClient = (clientId) => {
+        setNewEvent((prev) => {
+            const updatedClients = prev.clients.filter((id) => {
+                return parseInt(id) !== clientId;
+            });
+            return {
+                ...prev,
+                clients: updatedClients,
+            };
+        });
+    
+        setSelectedClients((prev) => 
+            prev.filter((client) => parseInt(client.id) !== clientId) // Asegúrate de comparar como número
+        );
+    };
+
     const handleCreateSession = async () => {
         try {
-            // Convertir la fecha a UTC antes de enviarla al backend
             const utcDate = moment.tz(newEvent.date, "America/Lima").utc().format();
+
             await api.post("/sessions/", {
                 date: utcDate,
                 session_type: newEvent.session_type,
-                clients: newEvent.clients,
+                clients: newEvent.clients, // Solo IDs de clientes seleccionados
             });
+
             navigate("/calendar/");
         } catch (error) {
             console.error("Error al crear la sesión:", error);
         }
     };
 
-    const formatDateForInput = (date) => {
-        // Formatear la fecha para el input de tipo datetime-local
-        return date.toISOString().slice(0, 16);
-    };
-
-    const handleDateChange = (e) => {
-        // Convertir la fecha seleccionada en el input a un objeto Date local
-        const selectedDate = new Date(e.target.value);
-        setNewEvent({ ...newEvent, date: selectedDate });
-    };
-
     return (
         <div>
             <h1>Crear nueva sesión</h1>
             <form>
+                {/* Fecha y Hora */}
                 <label>
                     Fecha y Hora:
                     <input
@@ -63,12 +87,13 @@ const CreateSessionPage = () => {
                         onChange={(e) =>
                             setNewEvent({
                                 ...newEvent,
-                                date: e.target.value, // Captura la fecha directamente como string
+                                date: e.target.value,
                             })
                         }
                     />
                 </label>
 
+                {/* Tipo de clase */}
                 <label>
                     Tipo de clase:
                     <select
@@ -82,28 +107,45 @@ const CreateSessionPage = () => {
                     </select>
                 </label>
 
-                {/* Formulario para asignar clientes */}
+                {/* Asignar clientes */}
                 <label>
                     Asignar clientes:
                     <select
-                        multiple
-                        value={newEvent.clients}
-                        onChange={(e) => {
-                            const selectedClients = Array.from(
-                                e.target.selectedOptions,
-                                (option) => option.value
-                            );
-                            setNewEvent({ ...newEvent, clients: selectedClients });
-                        }}
+                        onChange={(e) => handleAddClient(e.target.value)}
+                        value=""
                     >
-                        {clients.map((client) => (
-                            <option key={client.id} value={client.id}>
-                                {client.first_name} {client.last_name}
-                            </option>
-                        ))}
+                        <option value="" disabled>
+                            Seleccionar cliente
+                        </option>
+                        {clients
+                            .filter((client) => !newEvent.clients.includes(client.id))
+                            .map((client) => (
+                                <option key={client.id} value={client.id}>
+                                    {client.first_name} {client.last_name}
+                                </option>
+                            ))}
                     </select>
                 </label>
 
+                {/* Lista de clientes seleccionados */}
+                <div>
+                    <h3>Clientes seleccionados:</h3>
+                    <ul>
+                        {selectedClients.map((client) => (
+                            <li key={client.id}>
+                                {client.first_name} {client.last_name}
+                                <button
+                                    type="button"
+                                    onClick={() => handleRemoveClient(client.id)}
+                                >
+                                    Quitar
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+
+                {/* Botón para crear sesión */}
                 <button type="button" onClick={handleCreateSession}>
                     Crear sesión
                 </button>
