@@ -41,15 +41,6 @@ const SessionDetailPage = () => {
         );
     };
 
-    const handleSaveChanges = async () => {
-        try {
-            await api.put(`/sessions/${session_id}/`, { clients: selectedClients });
-            alert("Clientes asignados actualizados correctamente.");
-        } catch (error) {
-            console.error("Error al actualizar la sesión:", error);
-        }
-    };
-
     const handleMarkAttendance = async () => {
         try {
             await api.post(`/sessions/${session_id}/mark_attendance/`, {
@@ -66,46 +57,41 @@ const SessionDetailPage = () => {
         return <div>Cargando sesión...</div>;
     }
 
+    // Filtramos los clientes asignados a la sesión
+    const assignedClients = clients.filter(client =>
+        session.clients.some(assignedClientId => assignedClientId === client.id)
+    );
+
     return (
         <div>
             <h1>Sesión del {new Date(session.date).toLocaleDateString()}</h1>
             <p>Hora: {new Date(session.date).toLocaleTimeString()}</p>
             <p>Tipo: {session.session_type === "group" ? "Grupal" : "Privada"}</p>
 
-            <h3>Clientes Asignados</h3>
-            <ul>
-                {clients.map((client) => (
-                    <li key={client.id}>
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={selectedClients.includes(client.id)}
-                                onChange={() => handleClientChange(client.id)}
-                            />
-                            {client.first_name} {client.last_name}
-                        </label>
-                    </li>
-                ))}
-            </ul>
-            <button onClick={handleSaveChanges}>Guardar cambios</button>
-
-            <h3>Asistencia</h3>
-            <p>Marca los clientes que asistieron a esta sesión:</p>
-            <ul>
-                {clients.map((client) => (
-                    <li key={client.id}>
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={selectedClients.includes(client.id)}
-                                onChange={() => handleClientChange(client.id)}
-                            />
-                            {client.first_name} {client.last_name}
-                        </label>
-                    </li>
-                ))}
-            </ul>
-            <button onClick={handleMarkAttendance}>Clase terminada</button>
+            {/* Mostrar si no hay clientes asignados */}
+            {assignedClients.length === 0 ? (
+                <p>No hay clientes asignados a esta sesión.</p>
+            ) : (
+                <>
+                    <h3>Asistencia</h3>
+                    <p>Marca los clientes que asistieron a esta sesión:</p>
+                    <ul>
+                        {assignedClients.map((client) => (
+                            <li key={client.id}>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedClients.includes(client.id)}
+                                        onChange={() => handleClientChange(client.id)}
+                                    />
+                                    {client.first_name} {client.last_name}
+                                </label>
+                            </li>
+                        ))}
+                    </ul>
+                    <button onClick={handleMarkAttendance}>Clase terminada</button>
+                </>
+            )}
         </div>
     );
 };
