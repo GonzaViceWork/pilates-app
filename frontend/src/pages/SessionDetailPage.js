@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 
@@ -9,12 +9,8 @@ const SessionDetailPage = () => {
     const [clients, setClients] = useState([]);
     const [selectedClients, setSelectedClients] = useState([]);
 
-    useEffect(() => {
-        fetchSession();
-        fetchClients();
-    }, []);
-
-    const fetchSession = async () => {
+    // Uso de useCallback para evitar que la función se redefine
+    const fetchSession = useCallback(async () => {
         try {
             const response = await api.get(`/sessions/${session_id}/`);
             setSession(response.data);
@@ -22,7 +18,7 @@ const SessionDetailPage = () => {
         } catch (error) {
             console.error("Error al obtener la sesión:", error);
         }
-    };
+    }, [session_id]);
 
     const fetchClients = async () => {
         try {
@@ -32,6 +28,11 @@ const SessionDetailPage = () => {
             console.error("Error al obtener los clientes:", error);
         }
     };
+
+    useEffect(() => {
+        fetchSession();
+        fetchClients();
+    }, [fetchSession]);
 
     const handleClientChange = (clientId) => {
         setSelectedClients((prev) =>
@@ -43,13 +44,14 @@ const SessionDetailPage = () => {
 
     const handleMarkAttendance = async () => {
         try {
-            await api.post(`/sessions/${session_id}/mark_attendance/`, {
-                attended_clients: selectedClients,
+            const response = await api.post(`/sessions/${session_id}/mark_attendance/`, {
+                attended_clients: selectedClients,  // Clientes que asistieron
             });
             alert("Asistencia registrada correctamente.");
-            navigate("/calendar/");
+            navigate("/calendar/");  // Redirigir al calendario
         } catch (error) {
             console.error("Error al registrar la asistencia:", error);
+            alert("Hubo un error al registrar la asistencia.");
         }
     };
 

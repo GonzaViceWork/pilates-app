@@ -6,6 +6,8 @@ from .models import Client, Session, Package, \
         AttendanceLog
 from .serializers import ClientSerializer, SessionSerializer, \
         PackageSerializer
+from django.db.models import Q
+from pytz import timezone
 
 # Create your views here.
 class ClientViewSet(viewsets.ModelViewSet):
@@ -55,9 +57,52 @@ class ClientViewSet(viewsets.ModelViewSet):
         ]
         return Response(serialized_logs)
 
+    
+
 class SessionViewSet(viewsets.ModelViewSet):
     queryset = Session.objects.all()
     serializer_class = SessionSerializer
+
+    @action(detail=True, methods=["post"], url_path="mark_attendance")
+    def mark_attendance(self, request, pk=None):
+        session = self.get_object()
+        client_ids = request.data.get("attended_clients", [])
+
+        # Asegúrate de que los clientes proporcionados estén asignados a esta sesión
+        session_clients = session.clients.all()
+        assigned_client_ids = [client.id for client in session_clients]
+
+        # Filtrar los clientes que realmente están asignados a esta sesión
+        valid_clients = Client.objects.filter(Q(id__in=client_ids) & Q(id__in=assigned_client_ids))
+
+        # Convertir la hora de la sesión al huso horario de Lima, Perú
+        lima_tz = timezone("America/Lima")
+        session_datetime_lima = session.date.astimezone(lima_tz)
+        formatted_date = session_datetime_lima.strftime("%d-%m-%Y %I:%M %p")
+
+        # Mapear tipos de sesión a sus nombres en español
+        session_type_map = {
+            "private": "Privada",
+            "group": "Grupal"
+        }
+        session_type_translated = session_type_map.get(session.session_type, session.session_type)
+
+        # Descontar un cupo de cada cliente que asistió
+        for client in valid_clients:
+            if client.available_slots > 0:
+                client.available_slots -= 1
+                client.save()
+
+                # Crear un registro de AttendanceLog
+                AttendanceLog.objects.create(
+                    client=client,
+                    action="deduct",
+                    slots=-1,  # Disminuir un cupo
+                    description=f"Sesión {session_type_translated} - {formatted_date}",
+                )
+
+        return Response({"message": "Asistencia marcada correctamente."}, status=status.HTTP_200_OK)
+
 
     def create(self, request, *args, **kwargs):
         # Aquí puedes hacer validaciones o ajustes si es necesario
