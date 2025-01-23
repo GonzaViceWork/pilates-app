@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -10,8 +10,8 @@ const ClientDetailPage = () => {
     const [client, setClient] = useState(null);
     const [sessions, setSessions] = useState([]);
     const [attendanceLogs, setAttendanceLogs] = useState([]);
-    const [packages, setPackages] = useState([]); // Lista de paquetes disponibles
-    const [selectedPackage, setSelectedPackage] = useState(""); // Paquete seleccionado
+    const [packages, setPackages] = useState([]);
+    const [selectedPackage, setSelectedPackage] = useState("");
 
     const localizer = momentLocalizer(moment);
 
@@ -29,7 +29,7 @@ const ClientDetailPage = () => {
             const response = await api.get(`/sessions/?client_id=${client_id}`);
             // Filtrar sesiones asignadas al cliente
             const assignedSessions = response.data.filter(session =>
-                session.clients?.includes(parseInt(client_id))
+                session.clients?.includes(client_id) // Comparar como cadenas
             );
             setSessions(assignedSessions);
         } catch (error) {
@@ -64,8 +64,8 @@ const ClientDetailPage = () => {
             await api.post(`/clients/${client_id}/assign_package/`, {
                 package_id: selectedPackage,
             });
-            fetchClient(); // Refrescar los datos del cliente
-            fetchAttendanceLogs(); // Refrescar los registros de créditos
+            fetchClient();
+            fetchAttendanceLogs();
             alert("Paquete asignado correctamente.");
         } catch (error) {
             console.error("Error al asignar el paquete:", error);
@@ -87,20 +87,23 @@ const ClientDetailPage = () => {
         id: session.id,
         title: `${session.session_type} - ${session.date}`,
         start: new Date(session.date),
-        end: new Date(session.date), // Puedes ajustar la duración según sea necesario
+        end: new Date(session.date),
     }));
 
     return (
         <div>
-            {/* Información del cliente */}
             <h1>
                 {client.first_name} {client.last_name}
             </h1>
             <p>Email: {client.email}</p>
             <p>Teléfono: {client.phone}</p>
+            <p>CN/DNI: {client.cn_dni}</p>
             <p>Cupos disponibles: {client.available_slots}</p>
 
-            {/* Calendario de sesiones */}
+            <Link to={`/clients/${client_id}/edit`}>
+                <button>Editar Cliente</button>
+            </Link>
+
             <h3>Calendario de Sesiones</h3>
             <Calendar
                 localizer={localizer}
@@ -123,7 +126,6 @@ const ClientDetailPage = () => {
                 }}
             />
 
-            {/* Registro de créditos */}
             <h3>Registro de Créditos</h3>
             <table>
                 <thead>
@@ -152,7 +154,6 @@ const ClientDetailPage = () => {
                 </tbody>
             </table>
 
-            {/* Asignar un paquete */}
             <h3>Asignar Paquete</h3>
             <div>
                 <select
@@ -168,7 +169,6 @@ const ClientDetailPage = () => {
                 </select>
                 <button onClick={handleAddPackage}>Asignar Paquete</button>
             </div>
-
         </div>
     );
 };

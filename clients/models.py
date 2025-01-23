@@ -4,12 +4,13 @@ from django.db import models
 class Client(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    cn_dni = models.CharField(max_length=15, unique=True)  # CN/DNI único para peruanos y extranjeros
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=15, blank=True, null=True)
     available_slots = models.PositiveIntegerField(default=0)  # Cupos disponibles
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.first_name} {self.last_name} ({self.cn_dni})"
 
 
 class AttendanceLog(models.Model):
@@ -40,25 +41,16 @@ class Session(models.Model):
         ('group', 'Grupal'),
         ('private', 'Privada'),
     ]
+    SESSION_STATUSES = [
+        ('pending', 'Pendiente'),
+        ('finished', 'Terminada'),
+    ]
 
     clients = models.ManyToManyField(Client, related_name="sessions", blank=True)
     date = models.DateTimeField()
     session_type = models.CharField(max_length=10, choices=SESSION_TYPES, default='group')
+    status = models.CharField(max_length=10, choices=SESSION_STATUSES, default='pending')  # Estado de la sesión
     attended_clients = models.ManyToManyField(Client, related_name="attended_sessions", blank=True)
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        # Registrar asistencia y descontar cupos
-        for client in self.attended_clients.all():
-            if client.available_credits > 0:
-                client.available_credits -= 1
-                client.save()
-                AttendanceLog.objects.create(
-                    client=client,
-                    action="deduct",
-                    slots=-1,
-                    description=f"Sesión {self.get_session_type_display()} - {self.date}",
-                )
-
     def __str__(self):
-        return f"{self.get_session_type_display()} - {self.date.strftime('%Y-%m-%d %H:%M')}"
+        return f"{self.get_session_type_display()} - {self.date.strftime('%Y-%m-%d %H:%M')} - {self.get_status_display()}"

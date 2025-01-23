@@ -1,48 +1,63 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 
-const CreateClientPage = () => {
+const EditClientPage = () => {
+    const { client_id } = useParams();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         first_name: "",
         last_name: "",
         email: "",
         phone: "",
-        cn_dni: "", // Nuevo campo
-        available_slots: 0, // Nuevo campo con valor inicial
+        cn_dni: "", // Incluimos el campo cn_dni
     });
-    const [error, setError] = useState("");
+
+    useEffect(() => {
+        const fetchClient = async () => {
+            try {
+                const response = await api.get(`/clients/${client_id}/`);
+                setFormData({
+                    first_name: response.data.first_name,
+                    last_name: response.data.last_name,
+                    email: response.data.email,
+                    phone: response.data.phone,
+                    cn_dni: response.data.cn_dni, // Inicializamos cn_dni con los datos del cliente
+                });
+            } catch (error) {
+                console.error("Error al cargar los datos del cliente:", error);
+            }
+        };
+        fetchClient();
+    }, [client_id]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: name === "available_slots" ? parseInt(value) || 0 : value, // Parsear a número si es available_slots
-        });
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await api.post("/clients/", formData);
-            navigate("/clients/"); // Redirigir a la página de clientes después de la creación
-        } catch (err) {
-            console.error("Error al crear cliente:", err);
-            setError("Hubo un problema al crear el cliente. Por favor, revisa los datos ingresados.");
+            await api.put(`/clients/${client_id}/`, formData);
+            alert("Cliente actualizado con éxito.");
+            navigate(`/clients/${client_id}`); // Redirigir a la página de detalles del cliente
+        } catch (error) {
+            console.error("Error al actualizar el cliente:", error);
         }
     };
 
     return (
         <div>
-            <h1>Crear Nuevo Cliente</h1>
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            <h1>Editar Cliente</h1>
             <form onSubmit={handleSubmit}>
                 <div>
-                    <label htmlFor="first_name">Nombre:</label>
+                    <label>Nombre:</label>
                     <input
                         type="text"
-                        id="first_name"
                         name="first_name"
                         value={formData.first_name}
                         onChange={handleChange}
@@ -50,10 +65,9 @@ const CreateClientPage = () => {
                     />
                 </div>
                 <div>
-                    <label htmlFor="last_name">Apellido:</label>
+                    <label>Apellido:</label>
                     <input
                         type="text"
-                        id="last_name"
                         name="last_name"
                         value={formData.last_name}
                         onChange={handleChange}
@@ -61,10 +75,9 @@ const CreateClientPage = () => {
                     />
                 </div>
                 <div>
-                    <label htmlFor="email">Email:</label>
+                    <label>Email:</label>
                     <input
                         type="email"
-                        id="email"
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
@@ -72,41 +85,29 @@ const CreateClientPage = () => {
                     />
                 </div>
                 <div>
-                    <label htmlFor="phone">Teléfono:</label>
+                    <label>Teléfono:</label>
                     <input
                         type="text"
-                        id="phone"
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
+                        required
                     />
                 </div>
                 <div>
-                    <label htmlFor="cn_dni">CN/DNI:</label>
+                    <label>DNI:</label>
                     <input
                         type="text"
-                        id="cn_dni"
                         name="cn_dni"
                         value={formData.cn_dni}
                         onChange={handleChange}
                         required
                     />
                 </div>
-                <div>
-                    <label htmlFor="available_slots">Cupos Disponibles:</label>
-                    <input
-                        type="number"
-                        id="available_slots"
-                        name="available_slots"
-                        value={formData.available_slots}
-                        onChange={handleChange}
-                        min="0"
-                    />
-                </div>
-                <button type="submit">Crear Cliente</button>
+                <button type="submit">Guardar Cambios</button>
             </form>
         </div>
     );
 };
 
-export default CreateClientPage;
+export default EditClientPage;

@@ -9,7 +9,8 @@ from .serializers import ClientSerializer, SessionSerializer, \
 from django.db.models import Q
 from pytz import timezone
 
-# Create your views here.
+
+# Vista para gestionar clientes
 class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
@@ -40,25 +41,24 @@ class ClientViewSet(viewsets.ModelViewSet):
         )
 
         return Response({"message": "Paquete asignado correctamente."}, status=status.HTTP_200_OK)
-    
+
     @action(detail=True, methods=["get"], url_path="attendance_logs")
     def attendance_logs(self, request, pk=None):
         client = self.get_object()
         logs = client.attendance_logs.all()  # Obtiene todos los AttendanceLogs del cliente
-        # Serializa los datos
         serialized_logs = [
             {
                 "action": log.action,
                 "slots": log.slots,
                 "description": log.description,
-                "date": log.date,
+                "date": log.date.strftime("%d-%m-%Y %I:%M %p"),  # Formato de fecha amigable
             }
             for log in logs
         ]
         return Response(serialized_logs)
 
-    
 
+# Vista para gestionar sesiones
 class SessionViewSet(viewsets.ModelViewSet):
     queryset = Session.objects.all()
     serializer_class = SessionSerializer
@@ -66,6 +66,11 @@ class SessionViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"], url_path="mark_attendance")
     def mark_attendance(self, request, pk=None):
         session = self.get_object()
+
+        # Verificar si la sesión ya está terminada
+        if session.status == "finished":
+            return Response({"error": "La sesión ya está terminada."}, status=status.HTTP_400_BAD_REQUEST)
+
         client_ids = request.data.get("attended_clients", [])
 
         # Asegúrate de que los clientes proporcionados estén asignados a esta sesión
@@ -101,13 +106,18 @@ class SessionViewSet(viewsets.ModelViewSet):
                     description=f"Sesión {session_type_translated} - {formatted_date}",
                 )
 
-        return Response({"message": "Asistencia marcada correctamente."}, status=status.HTTP_200_OK)
+        # Marcar la sesión como terminada
+        session.status = "finished"
+        session.save()
 
+        return Response({"message": "Asistencia marcada correctamente."}, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
         # Aquí puedes hacer validaciones o ajustes si es necesario
         return super().create(request, *args, **kwargs)
 
+
+# Vista para gestionar paquetes
 class PackageViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Package.objects.all()
     serializer_class = PackageSerializer

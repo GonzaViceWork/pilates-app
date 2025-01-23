@@ -69,6 +69,7 @@ const ClientsPage = () => {
                         <th>Email</th>
                         <th>Teléfono</th>
                         <th>Cupos</th>
+                        <th>DNI</th> {/* Nueva columna para CN DNI */}
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -80,8 +81,14 @@ const ClientsPage = () => {
                             <td>{client.email}</td>
                             <td>{client.phone}</td>
                             <td>{client.available_slots}</td>
+                            <td>{client.cn_dni}</td> {/* Muestra el CN DNI */}
                             <td>
-                                <Link to={`/clients/${client.id}/`}>Ver</Link>
+                                <Link to={`/clients/${client.id}/`}>
+                                    <button>Ver</button>
+                                </Link>
+                                <Link to={`/clients/${client.id}/edit`}>
+                                    <button>Editar</button>
+                                </Link>
                                 <button onClick={() => handleDelete(client.id)}>Eliminar</button>
                             </td>
                         </tr>
