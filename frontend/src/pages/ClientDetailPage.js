@@ -27,10 +27,11 @@ const ClientDetailPage = () => {
     const fetchSessions = useCallback(async () => {
         try {
             const response = await api.get(`/sessions/?client_id=${client_id}`);
-            // Filtrar sesiones asignadas al cliente
+            console.log(response.data); // Ver la respuesta completa
             const assignedSessions = response.data.filter(session =>
-                session.clients?.includes(client_id) // Comparar como cadenas
+                session.clients?.includes(parseInt(client_id))  // Verifica si 'client.id' existe
             );
+            console.log(assignedSessions);  // Verifica las sesiones filtradas
             setSessions(assignedSessions);
         } catch (error) {
             console.error("Error al obtener las sesiones:", error);
@@ -85,7 +86,7 @@ const ClientDetailPage = () => {
 
     const events = sessions.map(session => ({
         id: session.id,
-        title: `${session.session_type} - ${session.date}`,
+        title: `${session.session_type === "group" ? "Sesión Grupal" : "Sesión Privada"} - ${moment(session.date).format("DD-MM-YYYY h:mm A")}`,
         start: new Date(session.date),
         end: new Date(session.date),
     }));
@@ -124,6 +125,13 @@ const ClientDetailPage = () => {
                     time: "Hora",
                     event: "Evento",
                 }}
+                eventPropGetter={(event) => ({
+                    className: "session-event",  // Puedes agregar clases personalizadas si lo deseas
+                })}
+                onSelectEvent={(event) => {
+                    // Redirige al usuario a la página de la sesión al hacer clic
+                    window.location.href = `/calendar/${event.id}/`;
+                }}
             />
 
             <h3>Registro de Créditos</h3>
@@ -143,7 +151,13 @@ const ClientDetailPage = () => {
                                 <td>{log.action === "add" ? "Paquete Asignado" : "Clase Asistida"}</td>
                                 <td>{log.slots}</td>
                                 <td>{log.description}</td>
-                                <td>{new Date(log.date).toLocaleString()}</td>
+                                <td>
+                                    {log.date
+                                        ? moment(log.date, "DD-MM-YYYY hh:mm A").format(
+                                            "D [de] MMMM [de] YYYY, h:mm A"
+                                        )
+                                        : "Fecha no disponible"}
+                                </td>
                             </tr>
                         ))
                     ) : (

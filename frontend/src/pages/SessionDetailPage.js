@@ -46,7 +46,16 @@ const SessionDetailPage = () => {
         try {
             const response = await api.post(`/sessions/${session_id}/mark_attendance/`, {
                 attended_clients: selectedClients,  // Clientes que asistieron
+                status: 'finished',  // Cambiar el estado de la sesión a "terminada"
             });
+
+            // Después de marcar la asistencia, actualiza el estado de la sesión y los clientes que asistieron
+            setSession((prevSession) => ({
+                ...prevSession,
+                attended_clients: selectedClients, // Actualizamos los clientes que asistieron
+                status: "finished", // Cambiar el estado de la sesión a 'Terminada'
+            }));
+
             alert("Asistencia registrada correctamente.");
             navigate("/calendar/");  // Redirigir al calendario
         } catch (error) {
@@ -64,11 +73,20 @@ const SessionDetailPage = () => {
         session.clients.some(assignedClientId => assignedClientId === client.id)
     );
 
+    // Cuando los clientes hayan asistido, esos checkboxes deben estar marcados
+    const isAttended = (clientId) => {
+        return session.attended_clients.includes(clientId); // Comprobar si el cliente ya ha asistido
+    };
+
     return (
         <div>
             <h1>Sesión del {new Date(session.date).toLocaleDateString()}</h1>
             <p>Hora: {new Date(session.date).toLocaleTimeString()}</p>
             <p>Tipo: {session.session_type === "group" ? "Grupal" : "Privada"}</p>
+
+            {/* Mostrar el estado de la sesión */}
+            <p>Estado: {session.status === "pending" ? "Pendiente" : "Terminada"}</p>
+
 
             {/* Mostrar si no hay clientes asignados */}
             {assignedClients.length === 0 ? (
@@ -83,8 +101,9 @@ const SessionDetailPage = () => {
                                 <label>
                                     <input
                                         type="checkbox"
-                                        checked={selectedClients.includes(client.id)}
+                                        checked={selectedClients.includes(client.id) || isAttended(client.id)} // Deja marcado si asistió
                                         onChange={() => handleClientChange(client.id)}
+                                        disabled={session.status === "finished"} // Deshabilitar los checkboxes si la sesión está terminada
                                     />
                                     {client.first_name} {client.last_name}
                                 </label>

@@ -8,8 +8,8 @@ const HomePage = () => {
             <p>Administra clientes, sesiones y paquetes con facilidad.</p>
             <nav>
                 <ul>
-                    <li><Link to="/clients/">Gestión de Clientes</Link></li>
-                    <li><Link to="/calendar/">Calendario de Sesiones</Link></li>
+                    <li><Link to="/clients/">Clientes</Link></li>
+                    <li><Link to="/calendar/">Calendario</Link></li>
                 </ul>
             </nav>
         </div>

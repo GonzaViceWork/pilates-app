@@ -7,6 +7,7 @@ const CreateSessionPage = () => {
     const [newEvent, setNewEvent] = useState({
         date: moment().tz("America/Lima").format("YYYY-MM-DDTHH:mm"), // Fecha inicial en Lima
         session_type: "group",
+        status: "pending", // Nuevo campo para el estado de la sesión
         clients: [], // Clientes seleccionados (IDs)
     });
     const [clients, setClients] = useState([]); // Lista de todos los clientes
@@ -34,7 +35,7 @@ const CreateSessionPage = () => {
                     clients: updatedClients,
                 };
             });
-    
+
             const client = clients.find((c) => c.id === parseInt(clientId));
             if (client) {
                 setSelectedClients((prev) => [...prev, client]);
@@ -52,8 +53,8 @@ const CreateSessionPage = () => {
                 clients: updatedClients,
             };
         });
-    
-        setSelectedClients((prev) => 
+
+        setSelectedClients((prev) =>
             prev.filter((client) => parseInt(client.id) !== clientId) // Asegúrate de comparar como número
         );
     };
@@ -62,10 +63,15 @@ const CreateSessionPage = () => {
         try {
             const utcDate = moment.tz(newEvent.date, "America/Lima").utc().format();
 
+            console.log(utcDate)
+            console.log(newEvent)
+
             await api.post("/sessions/", {
                 date: utcDate,
                 session_type: newEvent.session_type,
+                status: newEvent.status, // Incluir el estado en la solicitud
                 clients: newEvent.clients, // Solo IDs de clientes seleccionados
+                attended_clients: [], // Enviar como arreglo vacío
             });
 
             navigate("/calendar/");
@@ -104,6 +110,20 @@ const CreateSessionPage = () => {
                     >
                         <option value="group">Grupal</option>
                         <option value="private">Privada</option>
+                    </select>
+                </label>
+
+                {/* Estado */}
+                <label>
+                    Estado:
+                    <select
+                        value={newEvent.status}
+                        onChange={(e) =>
+                            setNewEvent({ ...newEvent, status: e.target.value })
+                        }
+                    >
+                        <option value="pending">Pendiente</option>
+                        <option value="finished">Terminada</option>
                     </select>
                 </label>
 

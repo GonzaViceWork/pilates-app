@@ -23,7 +23,7 @@ const CalendarPage = () => {
                 const sessionDate = moment(session.date).format("DD/MM/YYYY HH:mm"); // Formato de fecha legible
                 return {
                     ...session,
-                    title: `Sesión ${session.session_type} - ${sessionDate}`,
+                    title: `${session.session_type === "group" ? "Sesión Grupal" : "Sesión Privada"} - ${moment(session.date).format("DD-MM-YYYY h:mm A")}`,
                     start: new Date(session.date),
                     end: new Date(session.date),
                 };

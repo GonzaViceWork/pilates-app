@@ -5,7 +5,7 @@ from rest_framework import viewsets, status
 from .models import Client, Session, Package, \
         AttendanceLog
 from .serializers import ClientSerializer, SessionSerializer, \
-        PackageSerializer
+        PackageSerializer, AttendanceLogSerializer
 from django.db.models import Q
 from pytz import timezone
 
@@ -123,3 +123,6 @@ class PackageViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = PackageSerializer
 
 
+class AttendanceLogViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = AttendanceLog.objects.all()
+    serializer_class = AttendanceLogSerializer
