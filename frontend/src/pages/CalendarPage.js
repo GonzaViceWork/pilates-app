@@ -24,7 +24,6 @@ const CalendarPage = () => {
         try {
             const response = await api.get("/sessions/");
             const formattedSessions = response.data.map((session) => {
-                const sessionDate = moment(session.date).format("DD/MM/YYYY HH:mm"); // Formato de fecha legible
                 return {
                     ...session,
                     title: `${session.session_type === "group" ? "Sesión Grupal" : "Sesión Privada"} - ${moment(session.date).format("DD-MM-YYYY h:mm A")}`,
@@ -75,7 +74,7 @@ const CalendarPage = () => {
                 }}
                 firstDayOfWeek={1} // La semana comienza el lunes
             />
-            
+
             <button onClick={handleBack}>Volver</button>
         </div>
     );
