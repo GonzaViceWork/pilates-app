@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import api from "../api/axios";
 
 const ClientsPage = () => {
     const [clients, setClients] = useState([]);
     const [search, setSearch] = useState("");
     const [sortOrder, setSortOrder] = useState("asc");
+    const navigate = useNavigate();
+
+    const handleBack = () => {
+        navigate("/");
+    };
 
     useEffect(() => {
         fetchClients();
@@ -96,6 +101,8 @@ const ClientsPage = () => {
                 </tbody>
             </table>
             <Link to="/clients/new/">Crear nuevo cliente</Link>
+
+            <button onClick={handleBack}>Volver</button>
         </div>
     );
 };

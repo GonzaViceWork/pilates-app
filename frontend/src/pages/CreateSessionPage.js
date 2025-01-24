@@ -14,6 +14,11 @@ const CreateSessionPage = () => {
     const [selectedClients, setSelectedClients] = useState([]); // Clientes seleccionados con datos completos
     const navigate = useNavigate();
 
+    const handleBack = () => {
+        navigate("/calendar");
+    };
+
+    // Cargar todos los clientes
     useEffect(() => {
         const fetchClients = async () => {
             try {
@@ -26,45 +31,41 @@ const CreateSessionPage = () => {
         fetchClients();
     }, []);
 
-    const handleAddClient = (clientId) => {
-        if (!newEvent.clients.includes(clientId)) {
-            setNewEvent((prev) => {
-                const updatedClients = [...prev.clients, clientId];
-                return {
-                    ...prev,
-                    clients: updatedClients,
-                };
-            });
+    // Actualizar la lista de clientes disponibles en el dropdown cuando se agregan o eliminan clientes
+    useEffect(() => {
+        setSelectedClients(
+            clients.filter((client) => newEvent.clients.includes(client.id))
+        );
+    }, [newEvent.clients, clients]); // Depende de los clientes seleccionados y la lista completa de clientes
 
-            const client = clients.find((c) => c.id === parseInt(clientId));
-            if (client) {
-                setSelectedClients((prev) => [...prev, client]);
-            }
+    // Manejar la adición de un cliente
+    const handleAddClient = (clientId) => {
+        const clientIdNum = parseInt(clientId); // Asegúrate de que el ID del cliente es un número
+        if (!newEvent.clients.includes(clientIdNum)) {
+            setNewEvent((prev) => {
+                const updatedClients = [...prev.clients, clientIdNum];
+                return { ...prev, clients: updatedClients };
+            });
         }
     };
 
+    // Manejar la eliminación de un cliente
     const handleRemoveClient = (clientId) => {
         setNewEvent((prev) => {
-            const updatedClients = prev.clients.filter((id) => {
-                return parseInt(id) !== clientId;
-            });
+            const updatedClients = prev.clients.filter(
+                (id) => parseInt(id) !== clientId
+            );
             return {
                 ...prev,
                 clients: updatedClients,
             };
         });
-
-        setSelectedClients((prev) =>
-            prev.filter((client) => parseInt(client.id) !== clientId) // Asegúrate de comparar como número
-        );
     };
 
+    // Crear la sesión
     const handleCreateSession = async () => {
         try {
             const utcDate = moment.tz(newEvent.date, "America/Lima").utc().format();
-
-            console.log(utcDate)
-            console.log(newEvent)
 
             await api.post("/sessions/", {
                 date: utcDate,
@@ -138,7 +139,7 @@ const CreateSessionPage = () => {
                             Seleccionar cliente
                         </option>
                         {clients
-                            .filter((client) => !newEvent.clients.includes(client.id))
+                            .filter((client) => !newEvent.clients.includes(client.id)) // Filtrar clientes ya seleccionados
                             .map((client) => (
                                 <option key={client.id} value={client.id}>
                                     {client.first_name} {client.last_name}
@@ -170,6 +171,8 @@ const CreateSessionPage = () => {
                     Crear sesión
                 </button>
             </form>
+            
+            <button onClick={handleBack}>Volver</button>
         </div>
     );
 };

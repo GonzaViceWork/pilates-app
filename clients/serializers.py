@@ -23,7 +23,8 @@ class SessionSerializer(serializers.ModelSerializer):
         many=True, queryset=Client.objects.all()
     )
     attended_clients = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Client.objects.all()
+        many=True, queryset=Client.objects.all(),
+        required=False  # Hacer que este campo no sea obligatorio
     )
     session_type_display = serializers.CharField(source="get_session_type_display", read_only=True)
     status_display = serializers.CharField(source="get_status_display", read_only=True)

@@ -13,6 +13,10 @@ const EditClientPage = () => {
         cn_dni: "", // Incluimos el campo cn_dni
     });
 
+    const handleBack = () => {
+        navigate(`/clients/${client_id}`);
+    };
+
     useEffect(() => {
         const fetchClient = async () => {
             try {
@@ -106,6 +110,8 @@ const EditClientPage = () => {
                 </div>
                 <button type="submit">Guardar Cambios</button>
             </form>
+
+            <button onClick={handleBack}>Volver</button>
         </div>
     );
 };

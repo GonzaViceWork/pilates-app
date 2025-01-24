@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import api from "../api/axios";
 
 const ClientDetailPage = () => {
+    const navigate = useNavigate();
     const { client_id } = useParams();
     const [client, setClient] = useState(null);
     const [sessions, setSessions] = useState([]);
@@ -14,6 +15,10 @@ const ClientDetailPage = () => {
     const [selectedPackage, setSelectedPackage] = useState("");
 
     const localizer = momentLocalizer(moment);
+
+    const handleBack = () => {
+        navigate(`/clients`);
+    };
 
     const fetchClient = useCallback(async () => {
         try {
@@ -183,6 +188,8 @@ const ClientDetailPage = () => {
                 </select>
                 <button onClick={handleAddPackage}>Asignar Paquete</button>
             </div>
+            
+            <button onClick={handleBack}>Volver</button>
         </div>
     );
 };

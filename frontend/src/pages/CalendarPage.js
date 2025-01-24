@@ -12,6 +12,10 @@ const CalendarPage = () => {
     const [sessions, setSessions] = useState([]);
     const navigate = useNavigate(); // Hook para navegar a otras páginas
 
+    const handleBack = () => {
+        navigate("/");
+    };
+
     useEffect(() => {
         fetchSessions();
     }, []);
@@ -71,6 +75,8 @@ const CalendarPage = () => {
                 }}
                 firstDayOfWeek={1} // La semana comienza el lunes
             />
+            
+            <button onClick={handleBack}>Volver</button>
         </div>
     );
 };

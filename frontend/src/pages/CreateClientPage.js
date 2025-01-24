@@ -14,6 +14,10 @@ const CreateClientPage = () => {
     });
     const [error, setError] = useState("");
 
+    const handleBack = () => {
+        navigate("/clients");
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({
@@ -105,6 +109,8 @@ const CreateClientPage = () => {
                 </div>
                 <button type="submit">Crear Cliente</button>
             </form>
+            
+            <button onClick={handleBack}>Volver</button>
         </div>
     );
 };

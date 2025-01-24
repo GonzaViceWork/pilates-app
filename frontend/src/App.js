@@ -34,6 +34,7 @@ import EditClientPage from "./pages/EditClientPage";
 import CalendarPage from "./pages/CalendarPage";
 import CreateSessionPage from "./pages/CreateSessionPage";
 import SessionDetailPage from "./pages/SessionDetailPage";
+import EditSessionPage from "./pages/EditSessionPage";
 
 const App = () => {
     return (
@@ -45,8 +46,9 @@ const App = () => {
                 <Route path="/clients/:client_id/" element={<ClientDetailPage />} />
                 <Route path="/clients/:client_id/edit" element={<EditClientPage />} /> 
                 <Route path="/calendar/" element={<CalendarPage />} />
-                <Route path="/calendar/new" element={<CreateSessionPage />} /> {/* Ruta para crear sesión */}
+                <Route path="/calendar/new" element={<CreateSessionPage />} />
                 <Route path="/calendar/:session_id/" element={<SessionDetailPage />} />
+                <Route path="/calendar/:session_id/edit" element={<EditSessionPage />} />
             </Routes>
         </Router>
     );

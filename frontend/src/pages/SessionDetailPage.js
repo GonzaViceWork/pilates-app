@@ -9,6 +9,10 @@ const SessionDetailPage = () => {
     const [clients, setClients] = useState([]);
     const [selectedClients, setSelectedClients] = useState([]);
 
+    const handleBack = () => {
+        navigate(`/calendar`);
+    };
+
     // Uso de useCallback para evitar que la función se redefine
     const fetchSession = useCallback(async () => {
         try {
@@ -87,6 +91,12 @@ const SessionDetailPage = () => {
             {/* Mostrar el estado de la sesión */}
             <p>Estado: {session.status === "pending" ? "Pendiente" : "Terminada"}</p>
 
+            {/* Enlace para editar la sesión */}
+            {session.status !== "finished" && (
+                <p>
+                    <a href={`/calendar/${session.id}/edit`}>Editar sesión</a>
+                </p>
+            )}
 
             {/* Mostrar si no hay clientes asignados */}
             {assignedClients.length === 0 ? (
@@ -113,6 +123,8 @@ const SessionDetailPage = () => {
                     <button onClick={handleMarkAttendance}>Clase terminada</button>
                 </>
             )}
+
+            <button onClick={handleBack}>Volver</button>
         </div>
     );
 };
