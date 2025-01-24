@@ -13,6 +13,19 @@ const SessionDetailPage = () => {
         navigate(`/calendar`);
     };
 
+    const handleDeleteSession = async () => {
+        if (window.confirm("¿Estás seguro de que deseas eliminar esta sesión?")) {
+            try {
+                await api.delete(`/sessions/${session_id}/`);
+                alert("Sesión eliminada correctamente.");
+                navigate("/calendar/"); // Redirige al calendario después de eliminar
+            } catch (error) {
+                console.error("Error al eliminar la sesión:", error);
+                alert("Hubo un error al eliminar la sesión.");
+            }
+        }
+    };
+
     // Uso de useCallback para evitar que la función se redefine
     const fetchSession = useCallback(async () => {
         try {
@@ -48,7 +61,7 @@ const SessionDetailPage = () => {
 
     const handleMarkAttendance = async () => {
         try {
-            const response = await api.post(`/sessions/${session_id}/mark_attendance/`, {
+            await api.post(`/sessions/${session_id}/mark_attendance/`, {
                 attended_clients: selectedClients,  // Clientes que asistieron
                 status: 'finished',  // Cambiar el estado de la sesión a "terminada"
             });
@@ -125,6 +138,9 @@ const SessionDetailPage = () => {
             )}
 
             <button onClick={handleBack}>Volver</button>
+            <button onClick={handleDeleteSession} style={{ marginLeft: "10px", color: "white", backgroundColor: "red" }}>
+                Eliminar sesión
+            </button>
         </div>
     );
 };
