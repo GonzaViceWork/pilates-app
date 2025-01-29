@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import moment from "moment-timezone";
-import api from "../api/axios";
+import api from "../../api/axios";
 
 const CreateSessionPage = () => {
     const [newEvent, setNewEvent] = useState({

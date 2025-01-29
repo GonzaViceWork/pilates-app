@@ -40,4 +40,4 @@ class SessionSerializer(serializers.ModelSerializer):
 class PackageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Package
-        fields = ["id", "name", "slot_count"]
+        fields = ["id", "name", "slot_count", "price"]

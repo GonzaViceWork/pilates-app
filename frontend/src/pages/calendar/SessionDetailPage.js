@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import api from "../api/axios";
+import api from "../../api/axios";
 
 const SessionDetailPage = () => {
     const { session_id } = useParams();

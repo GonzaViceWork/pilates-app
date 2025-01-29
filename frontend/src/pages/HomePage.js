@@ -10,6 +10,7 @@ const HomePage = () => {
                 <ul>
                     <li><Link to="/clients/">Clientes</Link></li>
                     <li><Link to="/calendar/">Calendario</Link></li>
+                    <li><Link to="/packages/">Paquetes</Link></li>
                 </ul>
             </nav>
         </div>

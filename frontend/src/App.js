@@ -27,14 +27,17 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import ClientsPage from "./pages/ClientsPage";
-import ClientDetailPage from "./pages/ClientDetailPage";
-import CreateClientPage from "./pages/CreateClientPage";
-import EditClientPage from "./pages/EditClientPage";
-import CalendarPage from "./pages/CalendarPage";
-import CreateSessionPage from "./pages/CreateSessionPage";
-import SessionDetailPage from "./pages/SessionDetailPage";
-import EditSessionPage from "./pages/EditSessionPage";
+import ClientsPage from "./pages/clients/ClientsPage";
+import ClientDetailPage from "./pages/clients/ClientDetailPage";
+import CreateClientPage from "./pages/clients/CreateClientPage";
+import EditClientPage from "./pages/clients/EditClientPage";
+import CalendarPage from "./pages/calendar/CalendarPage";
+import CreateSessionPage from "./pages/calendar/CreateSessionPage";
+import EditSessionPage from "./pages/calendar/EditSessionPage";
+import SessionDetailPage from "./pages/calendar/SessionDetailPage";
+import PackagePage from "./pages/packages/PackagePage";
+import CreatePackagePage from "./pages/packages/CreatePackagePage";
+import EditPackagePage from "./pages/packages/EditPackagePage";
 
 const App = () => {
     return (
@@ -49,6 +52,9 @@ const App = () => {
                 <Route path="/calendar/new" element={<CreateSessionPage />} />
                 <Route path="/calendar/:session_id/" element={<SessionDetailPage />} />
                 <Route path="/calendar/:session_id/edit" element={<EditSessionPage />} />
+                <Route path="/packages/" element={<PackagePage />} />
+                <Route path="/packages/new/" element={<CreatePackagePage />} />
+                <Route path="/packages/:package_id/edit" element={<EditPackagePage />} />
             </Routes>
         </Router>
     );

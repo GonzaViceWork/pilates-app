@@ -31,9 +31,10 @@ class AttendanceLog(models.Model):
 class Package(models.Model):
     name = models.CharField(max_length=100)
     slot_count = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} - S/ {self.price}"
 
 
 class Session(models.Model):

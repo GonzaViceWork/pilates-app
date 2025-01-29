@@ -39,7 +39,7 @@ class SessionAdmin(admin.ModelAdmin):
 # Personalización de la interfaz del modelo Package
 @admin.register(Package)
 class PackageAdmin(admin.ModelAdmin):
-    list_display = ("name", "slot_count")
+    list_display = ("name", "slot_count", "price")
     search_fields = ("name",)
     ordering = ("slot_count",)
 

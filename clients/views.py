@@ -118,7 +118,7 @@ class SessionViewSet(viewsets.ModelViewSet):
 
 
 # Vista para gestionar paquetes
-class PackageViewSet(viewsets.ReadOnlyModelViewSet):
+class PackageViewSet(viewsets.ModelViewSet):
     queryset = Package.objects.all()
     serializer_class = PackageSerializer
 

@@ -3,7 +3,7 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import api from "../api/axios";
+import api from "../../api/axios";
 
 const ClientDetailPage = () => {
     const navigate = useNavigate();

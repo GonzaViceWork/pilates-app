@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment-timezone";
-import api from "../api/axios";
+import api from "../../api/axios";
 
 const EditSessionPage = () => {
     const [sessionData, setSessionData] = useState({
