@@ -1,0 +1,125 @@
+.session-detail-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+.session-title {
+    text-align: center;
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.session-info {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.session-info p {
+    margin: 5px 0;
+}
+
+.session-status {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.session-status.finished {
+    color: #28a745;
+}
+
+.session-status.pending {
+    color: #ffc107;
+}
+
+.assistance-section {
+    margin-top: 20px;
+}
+
+.assistance-list {
+    list-style: none;
+    padding: 0;
+}
+
+.assistance-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: #f9f9f9;
+    margin-bottom: 5px;
+}
+
+.assistance-list input {
+    cursor: pointer;
+}
+
+.button-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    width: 100%;
+    align-items: center; /* Alinea verticalmente los botones */
+}
+
+.detail-button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    flex: 1; /* Esto hace que todos los botones crezcan para ocupar el mismo espacio */
+    min-width: 150px; /* Asegura que los botones no se hagan más pequeños que 150px */
+    display: flex;
+    justify-content: center; /* Centra el texto horizontalmente */
+    align-items: center; /* Centra el texto verticalmente */
+    height: 50px; /* Fija una altura consisten */
+}
+
+.edit-session-link {
+    display: block;
+    text-align: center;
+    margin: 10px 0;
+    font-size: 16px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.edit-session-link:hover {
+    text-decoration: underline;
+}
+
+.mark-attendance-button {
+    background: #28a745;
+    color: white;
+}
+
+.mark-attendance-button:hover {
+    background: #218838;
+}
+
+.back-button {
+    background: #007bff;
+    color: white;
+}
+
+.back-button:hover {
+    background: #0056b3;
+}
+
+.delete-button {
+    background: #dc3545;
+    color: white;
+}
+
+.delete-button:hover {
+    background: #c82333;
+}

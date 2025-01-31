@@ -36,7 +36,7 @@ const ClientDetailPage = () => {
             const assignedSessions = response.data.filter(session =>
                 session.clients?.includes(parseInt(client_id))  // Verifica si 'client.id' existe
             );
-            console.log(assignedSessions);  // Verifica las sesiones filtradas
+            // console.log(assignedSessions);  // Verifica las sesiones filtradas
             setSessions(assignedSessions);
         } catch (error) {
             console.error("Error al obtener las sesiones:", error);
@@ -86,7 +86,7 @@ const ClientDetailPage = () => {
     }, [fetchClient, fetchSessions, fetchAttendanceLogs]);
 
     if (!client) {
-        return <div>Cargando cliente...</div>;
+        return <div style={styles.loading}>Cargando cliente...</div>;
     }
 
     const events = sessions.map(session => ({
@@ -97,50 +97,50 @@ const ClientDetailPage = () => {
     }));
 
     return (
-        <div>
-            <h1>
+        <div style={styles.container}>
+            <h1 style={styles.title}>
                 {client.first_name} {client.last_name}
             </h1>
-            <p>Email: {client.email}</p>
-            <p>Teléfono: {client.phone}</p>
-            <p>CN/DNI: {client.cn_dni}</p>
-            <p>Cupos disponibles: {client.available_slots}</p>
+            <div style={styles.infoContainer}>
+                <p><strong>Email:</strong> {client.email}</p>
+                <p><strong>Teléfono:</strong> {client.phone}</p>
+                <p><strong>DNI:</strong> {client.cn_dni}</p>
+                <p><strong>Cupos disponibles:</strong> {client.available_slots}</p>
+            </div>
 
             <Link to={`/clients/${client_id}/edit`}>
-                <button>Editar Cliente</button>
+                <button style={styles.editButton}>Editar Cliente</button>
             </Link>
 
-            <h3>Calendario de Sesiones</h3>
-            <Calendar
-                localizer={localizer}
-                events={events}
-                startAccessor="start"
-                endAccessor="end"
-                style={{ height: 500, margin: "50px 0" }}
-                firstDayOfWeek={1}
-                messages={{
-                    today: "Hoy",
-                    previous: "Anterior",
-                    next: "Siguiente",
-                    month: "Mes",
-                    week: "Semana",
-                    day: "Día",
-                    agenda: "Agenda",
-                    date: "Fecha",
-                    time: "Hora",
-                    event: "Evento",
-                }}
-                eventPropGetter={(event) => ({
-                    className: "session-event",  // Puedes agregar clases personalizadas si lo deseas
-                })}
-                onSelectEvent={(event) => {
-                    // Redirige al usuario a la página de la sesión al hacer clic
-                    window.location.href = `/calendar/${event.id}/`;
-                }}
-            />
+            <h3 style={styles.sectionTitle}>Calendario de Sesiones</h3>
+            <div style={styles.calendarContainer}>
+                <Calendar
+                    localizer={localizer}
+                    events={events}
+                    startAccessor="start"
+                    endAccessor="end"
+                    style={styles.calendar}
+                    firstDayOfWeek={1}
+                    messages={{
+                        today: "Hoy",
+                        previous: "Anterior",
+                        next: "Siguiente",
+                        month: "Mes",
+                        week: "Semana",
+                        day: "Día",
+                        agenda: "Agenda",
+                        date: "Fecha",
+                        time: "Hora",
+                        event: "Evento",
+                    }}
+                    onSelectEvent={(event) => {
+                        window.location.href = `/calendar/${event.id}/`;
+                    }}
+                />
+            </div>
 
-            <h3>Registro de Créditos</h3>
-            <table>
+            <h3 style={styles.sectionTitle}>Registro de Créditos</h3>
+            <table style={styles.table}>
                 <thead>
                     <tr>
                         <th>Acción</th>
@@ -156,13 +156,7 @@ const ClientDetailPage = () => {
                                 <td>{log.action === "add" ? "Paquete Asignado" : "Clase Asistida"}</td>
                                 <td>{log.slots}</td>
                                 <td>{log.description}</td>
-                                <td>
-                                    {log.date
-                                        ? moment(log.date, "DD-MM-YYYY hh:mm A").format(
-                                            "D [de] MMMM [de] YYYY, h:mm A"
-                                        )
-                                        : "Fecha no disponible"}
-                                </td>
+                                <td>{moment(log.date).format("D [de] MMMM [de] YYYY, h:mm A")}</td>
                             </tr>
                         ))
                     ) : (
@@ -173,11 +167,12 @@ const ClientDetailPage = () => {
                 </tbody>
             </table>
 
-            <h3>Asignar Paquete</h3>
-            <div>
+            <h3 style={styles.sectionTitle}>Asignar Paquete</h3>
+            <div style={styles.packageContainer}>
                 <select
                     value={selectedPackage}
                     onChange={(e) => setSelectedPackage(e.target.value)}
+                    style={styles.select}
                 >
                     <option value="">Selecciona un paquete</option>
                     {packages.map((pkg) => (
@@ -186,12 +181,79 @@ const ClientDetailPage = () => {
                         </option>
                     ))}
                 </select>
-                <button onClick={handleAddPackage}>Asignar Paquete</button>
+                <button onClick={handleAddPackage} style={styles.assignButton}>Asignar Paquete</button>
             </div>
-            
-            <button onClick={handleBack}>Volver</button>
+
+            <button onClick={handleBack} style={styles.backButton}>Volver</button>
         </div>
     );
+};
+
+// 🎨 Estilos en línea
+const styles = {
+    container: {
+        maxWidth: "800px",
+        margin: "auto",
+        padding: "20px",
+        backgroundColor: "#f8f9fa",
+        borderRadius: "10px",
+        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+        textAlign: "center",
+    },
+    title: {
+        fontSize: "26px",
+        marginBottom: "10px",
+    },
+    infoContainer: {
+        marginBottom: "20px",
+    },
+    sectionTitle: {
+        marginTop: "20px",
+        fontSize: "20px",
+    },
+    editButton: {
+        padding: "10px",
+        backgroundColor: "#007bff",
+        color: "white",
+        borderRadius: "5px",
+        cursor: "pointer",
+        marginBottom: "20px",
+    },
+    calendarContainer: {
+        marginBottom: "30px",
+    },
+    calendar: {
+        height: "400px",
+    },
+    table: {
+        width: "100%",
+        borderCollapse: "collapse",
+        marginTop: "10px",
+    },
+    packageContainer: {
+        display: "flex",
+        justifyContent: "center",
+        gap: "10px",
+    },
+    select: {
+        padding: "8px",
+        borderRadius: "5px",
+    },
+    assignButton: {
+        padding: "10px",
+        backgroundColor: "#28a745",
+        color: "white",
+        borderRadius: "5px",
+        cursor: "pointer",
+    },
+    backButton: {
+        padding: "10px",
+        backgroundColor: "#6c757d",
+        color: "white",
+        borderRadius: "5px",
+        cursor: "pointer",
+        marginTop: "20px",
+    },
 };
 
 export default ClientDetailPage;

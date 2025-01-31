@@ -55,18 +55,25 @@ const ClientsPage = () => {
     );
 
     return (
-        <div>
-            <h1>Gestión de Clientes</h1>
-            <input
-                type="text"
-                placeholder="Buscar por nombre o apellido"
-                value={search}
-                onChange={handleSearch}
-            />
-            <button onClick={handleSort}>
-                Ordenar por apellido ({sortOrder === "asc" ? "Ascendente" : "Descendente"})
-            </button>
-            <table>
+        <div style={styles.container}>
+            <h1 style={styles.title}>Gestión de Clientes</h1>
+            
+            {/* Barra de búsqueda y botón de ordenar */}
+            <div style={styles.searchContainer}>
+                <input
+                    type="text"
+                    placeholder="Buscar por nombre o apellido"
+                    value={search}
+                    onChange={handleSearch}
+                    style={styles.searchInput}
+                />
+                <button onClick={handleSort} style={styles.sortButton}>
+                    Ordenar por apellido ({sortOrder === "asc" ? "Ascendente" : "Descendente"})
+                </button>
+            </div>
+
+            {/* Tabla de clientes */}
+            <table style={styles.table}>
                 <thead>
                     <tr>
                         <th>Nombre</th>
@@ -74,7 +81,7 @@ const ClientsPage = () => {
                         <th>Email</th>
                         <th>Teléfono</th>
                         <th>Cupos</th>
-                        <th>DNI</th> {/* Nueva columna para CN DNI */}
+                        <th>DNI</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -86,25 +93,121 @@ const ClientsPage = () => {
                             <td>{client.email}</td>
                             <td>{client.phone}</td>
                             <td>{client.available_slots}</td>
-                            <td>{client.cn_dni}</td> {/* Muestra el CN DNI */}
-                            <td>
+                            <td>{client.cn_dni}</td>
+                            <td style={styles.actions}>
                                 <Link to={`/clients/${client.id}/`}>
-                                    <button>Ver</button>
+                                    <button style={styles.viewButton}>Ver</button>
                                 </Link>
                                 <Link to={`/clients/${client.id}/edit`}>
-                                    <button>Editar</button>
+                                    <button style={styles.editButton}>Editar</button>
                                 </Link>
-                                <button onClick={() => handleDelete(client.id)}>Eliminar</button>
+                                <button onClick={() => handleDelete(client.id)} style={styles.deleteButton}>
+                                    Eliminar
+                                </button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
-            <Link to="/clients/new/">Crear nuevo cliente</Link>
 
-            <button onClick={handleBack}>Volver</button>
+            {/* Botón de nuevo cliente */}
+            <Link to="/clients/new/" style={styles.createLink}>
+                <button style={styles.createButton}>Crear nuevo cliente</button>
+            </Link>
+
+            {/* Botón de volver */}
+            <button onClick={handleBack} style={styles.backButton}>Volver</button>
         </div>
     );
+};
+
+// 🎨 Estilos en línea
+const styles = {
+    container: {
+        maxWidth: "900px",
+        margin: "auto",
+        padding: "20px",
+        textAlign: "center",
+    },
+    title: {
+        fontSize: "28px",
+        marginBottom: "20px",
+    },
+    searchContainer: {
+        display: "flex",
+        justifyContent: "center",
+        gap: "10px",
+        marginBottom: "20px",
+    },
+    searchInput: {
+        padding: "10px",
+        fontSize: "16px",
+        width: "300px",
+        border: "1px solid #ccc",
+        borderRadius: "5px",
+    },
+    sortButton: {
+        padding: "10px",
+        backgroundColor: "#007bff",
+        color: "white",
+        border: "none",
+        borderRadius: "5px",
+        cursor: "pointer",
+    },
+    table: {
+        width: "100%",
+        borderCollapse: "collapse",
+        marginBottom: "20px",
+    },
+    actions: {
+        display: "flex",
+        justifyContent: "center",
+        gap: "5px",
+    },
+    viewButton: {
+        backgroundColor: "#17a2b8",
+        color: "white",
+        padding: "5px 10px",
+        border: "none",
+        borderRadius: "5px",
+        cursor: "pointer",
+    },
+    editButton: {
+        backgroundColor: "#ffc107",
+        color: "black",
+        padding: "5px 10px",
+        border: "none",
+        borderRadius: "5px",
+        cursor: "pointer",
+    },
+    deleteButton: {
+        backgroundColor: "#dc3545",
+        color: "white",
+        padding: "5px 10px",
+        border: "none",
+        borderRadius: "5px",
+        cursor: "pointer",
+    },
+    createLink: {
+        textDecoration: "none",
+    },
+    createButton: {
+        padding: "10px 20px",
+        backgroundColor: "#28a745",
+        color: "white",
+        border: "none",
+        borderRadius: "5px",
+        cursor: "pointer",
+        marginBottom: "20px",
+    },
+    backButton: {
+        padding: "10px 20px",
+        backgroundColor: "#6c757d",
+        color: "white",
+        border: "none",
+        borderRadius: "5px",
+        cursor: "pointer",
+    },
 };
 
 export default ClientsPage;

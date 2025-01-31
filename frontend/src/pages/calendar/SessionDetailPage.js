@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import api from "../../api/axios";
+import "./SessionDetailPage.css"; // Asegúrate de importar el CSS
 
 const SessionDetailPage = () => {
     const { session_id } = useParams();
@@ -10,7 +11,7 @@ const SessionDetailPage = () => {
     const [selectedClients, setSelectedClients] = useState([]);
 
     const handleBack = () => {
-        navigate(`/calendar`);
+        navigate("/calendar");
     };
 
     const handleDeleteSession = async () => {
@@ -26,7 +27,6 @@ const SessionDetailPage = () => {
         }
     };
 
-    // Uso de useCallback para evitar que la función se redefine
     const fetchSession = useCallback(async () => {
         try {
             const response = await api.get(`/sessions/${session_id}/`);
@@ -66,7 +66,6 @@ const SessionDetailPage = () => {
                 status: 'finished',  // Cambiar el estado de la sesión a "terminada"
             });
 
-            // Después de marcar la asistencia, actualiza el estado de la sesión y los clientes que asistieron
             setSession((prevSession) => ({
                 ...prevSession,
                 attended_clients: selectedClients, // Actualizamos los clientes que asistieron
@@ -85,62 +84,81 @@ const SessionDetailPage = () => {
         return <div>Cargando sesión...</div>;
     }
 
-    // Filtramos los clientes asignados a la sesión
     const assignedClients = clients.filter(client =>
         session.clients.some(assignedClientId => assignedClientId === client.id)
     );
 
-    // Cuando los clientes hayan asistido, esos checkboxes deben estar marcados
     const isAttended = (clientId) => {
         return session.attended_clients.includes(clientId); // Comprobar si el cliente ya ha asistido
     };
 
     return (
-        <div>
-            <h1>Sesión del {new Date(session.date).toLocaleDateString()}</h1>
-            <p>Hora: {new Date(session.date).toLocaleTimeString()}</p>
-            <p>Tipo: {session.session_type === "group" ? "Grupal" : "Privada"}</p>
-
-            {/* Mostrar el estado de la sesión */}
-            <p>Estado: {session.status === "pending" ? "Pendiente" : "Terminada"}</p>
-
-            {/* Enlace para editar la sesión */}
-            {session.status !== "finished" && (
-                <p>
-                    <a href={`/calendar/${session.id}/edit`}>Editar sesión</a>
+        <div className="session-detail-container">
+            <h1 className="session-title">Sesión del {new Date(session.date).toLocaleDateString()}</h1>
+            
+            <div className="session-info">
+                <p>Hora: {new Date(session.date).toLocaleTimeString()}</p>
+                <p>Tipo: {session.session_type === "group" ? "Grupal" : "Privada"}</p>
+                
+                <p className={`session-status ${session.status}`}>
+                    Estado: {session.status === "pending" ? "Pendiente" : "Terminada"}
                 </p>
-            )}
 
-            {/* Mostrar si no hay clientes asignados */}
-            {assignedClients.length === 0 ? (
-                <p>No hay clientes asignados a esta sesión.</p>
-            ) : (
-                <>
-                    <h3>Asistencia</h3>
-                    <p>Marca los clientes que asistieron a esta sesión:</p>
-                    <ul>
-                        {assignedClients.map((client) => (
-                            <li key={client.id}>
-                                <label>
+                {session.status !== "finished" && (
+                    <Link to={`/calendar/${session.id}/edit`} className="edit-session-link">
+                        Editar sesión
+                    </Link>
+                )}
+            </div>
+
+            <div className="assistance-section">
+                {assignedClients.length === 0 ? (
+                    <p>No hay clientes asignados a esta sesión.</p>
+                ) : (
+                    <>
+                        <h3>Asistencia</h3>
+                        <p>Marca los clientes que asistieron a esta sesión:</p>
+                        <ul className="assistance-list">
+                            {assignedClients.map((client) => (
+                                <li key={client.id}>
                                     <input
                                         type="checkbox"
-                                        checked={selectedClients.includes(client.id) || isAttended(client.id)} // Deja marcado si asistió
+                                        checked={selectedClients.includes(client.id) || isAttended(client.id)}
                                         onChange={() => handleClientChange(client.id)}
-                                        disabled={session.status === "finished"} // Deshabilitar los checkboxes si la sesión está terminada
+                                        disabled={session.status === "finished"}
                                     />
                                     {client.first_name} {client.last_name}
-                                </label>
-                            </li>
-                        ))}
-                    </ul>
-                    <button onClick={handleMarkAttendance}>Clase terminada</button>
-                </>
-            )}
+                                </li>
+                            ))}
+                        </ul>
+                        {session.status !== "finished" && (
+                            <div className="button-container">
+                                <button 
+                                    className="detail-button mark-attendance-button"
+                                    onClick={handleMarkAttendance}
+                                >
+                                    Clase terminada
+                                </button>
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
 
-            <button onClick={handleBack}>Volver</button>
-            <button onClick={handleDeleteSession} style={{ marginLeft: "10px", color: "white", backgroundColor: "red" }}>
-                Eliminar sesión
-            </button>
+            <div className="button-container">
+                <button 
+                    className="detail-button back-button"
+                    onClick={handleBack}
+                >
+                    Volver
+                </button>
+                <button 
+                    className="detail-button delete-button"
+                    onClick={handleDeleteSession}
+                >
+                    Eliminar sesión
+                </button>
+            </div>
         </div>
     );
 };

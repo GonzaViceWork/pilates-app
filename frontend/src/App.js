@@ -38,10 +38,12 @@ import SessionDetailPage from "./pages/calendar/SessionDetailPage";
 import PackagePage from "./pages/packages/PackagePage";
 import CreatePackagePage from "./pages/packages/CreatePackagePage";
 import EditPackagePage from "./pages/packages/EditPackagePage";
+import NavBar from "./components/NavBar";
 
 const App = () => {
     return (
         <Router>
+            <NavBar />
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/clients/" element={<ClientsPage />} />
