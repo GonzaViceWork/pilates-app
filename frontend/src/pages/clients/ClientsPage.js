@@ -76,34 +76,36 @@ const ClientsPage = () => {
             <table style={styles.table}>
                 <thead>
                     <tr>
-                        <th>Nombre</th>
-                        <th>Apellido</th>
-                        <th>Email</th>
-                        <th>Teléfono</th>
-                        <th>Cupos</th>
-                        <th>DNI</th>
-                        <th>Acciones</th>
+                        <th style={styles.th}>Nombre</th>
+                        <th style={styles.th}>Apellido</th>
+                        <th style={styles.th}>Email</th>
+                        <th style={styles.th}>Teléfono</th>
+                        <th style={styles.th}>Cupos</th>
+                        <th style={styles.th}>DNI</th>
+                        <th style={styles.th}>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     {filteredClients.map((client) => (
                         <tr key={client.id}>
-                            <td>{client.first_name}</td>
-                            <td>{client.last_name}</td>
-                            <td>{client.email}</td>
-                            <td>{client.phone}</td>
-                            <td>{client.available_slots}</td>
-                            <td>{client.cn_dni}</td>
-                            <td style={styles.actions}>
-                                <Link to={`/clients/${client.id}/`}>
-                                    <button style={styles.viewButton}>Ver</button>
-                                </Link>
-                                <Link to={`/clients/${client.id}/edit`}>
-                                    <button style={styles.editButton}>Editar</button>
-                                </Link>
-                                <button onClick={() => handleDelete(client.id)} style={styles.deleteButton}>
-                                    Eliminar
-                                </button>
+                            <td style={styles.td}>{client.first_name}</td>
+                            <td style={styles.td}>{client.last_name}</td>
+                            <td style={styles.td}>{client.email}</td>
+                            <td style={styles.td}>{client.phone}</td>
+                            <td style={styles.td}>{client.available_slots}</td>
+                            <td style={styles.td}>{client.cn_dni}</td>
+                            <td style={styles.td}>
+                                <div style={styles.actions}>
+                                    <Link to={`/clients/${client.id}/`}>
+                                        <button style={styles.viewButton}>Ver</button>
+                                    </Link>
+                                    <Link to={`/clients/${client.id}/edit`}>
+                                        <button style={styles.editButton}>Editar</button>
+                                    </Link>
+                                    <button onClick={() => handleDelete(client.id)} style={styles.deleteButton}>
+                                        Eliminar
+                                    </button>
+                                </div> 
                             </td>
                         </tr>
                     ))}
@@ -157,7 +159,16 @@ const styles = {
     table: {
         width: "100%",
         borderCollapse: "collapse",
-        marginBottom: "20px",
+        marginBottom: "20px"
+    },
+    th: {
+        padding: "10px",
+        backgroundColor: "#f8f9fa",
+        borderBottom: "2px solid #ddd"
+    },
+    td: {
+        padding: "10px",
+        borderBottom: "1px solid #ddd"
     },
     actions: {
         display: "flex",
