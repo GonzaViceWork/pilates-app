@@ -49,11 +49,19 @@ const EditSessionPage = () => {
         if (session_id) fetchSession();
     }, [session_id, clients]);
 
+    useEffect(() => {
+        setSelectedClients(
+            clients.filter(client => sessionData.clients.includes(String(client.id)))
+        );
+    }, [sessionData.clients, clients]);
+    
+
     const handleAddClient = (clientId) => {
-        if (!sessionData.clients.includes(clientId)) {
+        const clientIdStr = String(clientId);
+        if (!sessionData.clients.includes(clientIdStr)) {
             setSessionData(prev => ({
                 ...prev,
-                clients: [...prev.clients, clientId],
+                clients: [...prev.clients, clientIdStr],
             }));
             const client = clients.find(c => c.id === clientId);
             if (client) setSelectedClients(prev => [...prev, client]);
@@ -63,9 +71,9 @@ const EditSessionPage = () => {
     const handleRemoveClient = (clientId) => {
         setSessionData(prev => ({
             ...prev,
-            clients: prev.clients.filter(id => id !== clientId),
+            clients: prev.clients.filter(id => String(id) !== String(clientId)),
         }));
-        setSelectedClients(prev => prev.filter(client => client.id !== clientId));
+        setSelectedClients(prev => prev.filter(client => String(client.id) !== String(clientId)));
     };
 
     const handleSaveSession = async () => {
@@ -117,7 +125,7 @@ const EditSessionPage = () => {
                     Asignar clientes:
                     <select onChange={(e) => handleAddClient(e.target.value)} value="">
                         <option value="" disabled>Seleccionar cliente</option>
-                        {clients.filter(client => !sessionData.clients.includes(client.id)).map(client => (
+                        {clients.filter(client => !sessionData.clients.includes(String(client.id))).map(client => (
                             <option key={client.id} value={client.id}>{client.first_name} {client.last_name}</option>
                         ))}
                     </select>
