@@ -7,11 +7,9 @@ const HomePage = () => {
             <p>Administra clientes, sesiones y paquetes con facilidad.</p>
             
             <h2>📌 ¿Qué puedes hacer aquí?</h2>
-            <ul>
-                <li>📋 Gestionar la lista de clientes y sus datos.</li>
-                <li>📅 Agendar y administrar sesiones de Pilates.</li>
-                <li>🎟️ Manejar los paquetes de clases disponibles.</li>
-            </ul>
+            <p>📋 Gestionar la lista de clientes y sus datos.</p>
+            <p>📅 Agendar y administrar sesiones de Pilates.</p>
+            <p>🎟️ Manejar los paquetes de clases disponibles.</p>
 
             <h2>📝 Instrucciones</h2>
             <p>
