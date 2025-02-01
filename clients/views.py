@@ -103,7 +103,7 @@ class SessionViewSet(viewsets.ModelViewSet):
                     client=client,
                     action="deduct",
                     slots=-1,  # Disminuir un cupo
-                    description=f"Sesión {session_type_translated} - {formatted_date}",
+                    description=f"Sesión {session_type_translated} - {formatted_date} en {session.get_room_display()}",
                 )
 
         # Marcar la sesión como terminada

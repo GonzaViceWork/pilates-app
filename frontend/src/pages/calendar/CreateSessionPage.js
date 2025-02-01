@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import moment from "moment-timezone";
 import api from "../../api/axios";
 import "./CreateSessionPage.css"; // Importar archivo de estilos
@@ -10,6 +10,7 @@ const CreateSessionPage = () => {
         session_type: "group",
         status: "pending",
         clients: [],
+        room: "room_1",
     });
     const [clients, setClients] = useState([]);
     const [selectedClients, setSelectedClients] = useState([]);
@@ -57,16 +58,17 @@ const CreateSessionPage = () => {
     const handleCreateSession = async () => {
         try {
             const utcDate = moment.tz(newEvent.date, "America/Lima").utc().format();
-
-            await api.post("/sessions/", {
+            const response = await api.post("/sessions/", {
                 date: utcDate,
+                room: newEvent.room,
                 session_type: newEvent.session_type,
                 status: newEvent.status,
                 clients: newEvent.clients,
                 attended_clients: [],
             });
-
-            navigate("/calendar/");
+            // Redirigir con el ID de la sesión creada
+            const sessionId = response.data.id;  // Aquí obtienes el id de la sesión
+            navigate(`/calendar/${sessionId}`);  // Ahora navegas a la página de la sesión
         } catch (error) {
             console.error("Error al crear la sesión:", error);
         }
@@ -83,6 +85,17 @@ const CreateSessionPage = () => {
                         value={newEvent.date}
                         onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
                     />
+                </label>
+
+                <label>
+                    Sala:
+                    <select
+                        value={newEvent.room}
+                        onChange={(e) => setNewEvent({ ...newEvent, room: e.target.value })}
+                    >
+                        <option value="room_1">Sala 1</option>
+                        <option value="room_2">Sala 2</option>
+                    </select>
                 </label>
 
                 <label>

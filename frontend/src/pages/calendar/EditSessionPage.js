@@ -8,6 +8,7 @@ const EditSessionPage = () => {
     const [sessionData, setSessionData] = useState({
         date: moment().tz("America/Lima").format("YYYY-MM-DDTHH:mm"),
         session_type: "group",
+        room: "room_1",
         status: "pending",
         clients: [],
     });
@@ -35,6 +36,7 @@ const EditSessionPage = () => {
                 const session = response.data;
                 setSessionData({
                     date: moment(session.date).tz("America/Lima").format("YYYY-MM-DDTHH:mm"),
+                    room: session.room,
                     session_type: session.session_type,
                     status: session.status,
                     clients: session.clients.map(String),
@@ -74,6 +76,7 @@ const EditSessionPage = () => {
                 status: sessionData.status,
                 clients: sessionData.clients,
                 attended_clients: sessionData.attended_clients || [],
+                room: sessionData.room,
             });
             navigate(`/calendar/${session_id}`);
         } catch (error) {
@@ -88,6 +91,13 @@ const EditSessionPage = () => {
                 <label>
                     Fecha y Hora:
                     <input type="datetime-local" value={sessionData.date} onChange={(e) => setSessionData({ ...sessionData, date: e.target.value })} />
+                </label>
+                <label>
+                    Sala:
+                    <select value={sessionData.room} onChange={(e) => setSessionData({ ...sessionData, room: e.target.value })}>
+                        <option value="room_1">Sala 1</option>
+                        <option value="room_2">Sala 2</option>
+                    </select>
                 </label>
                 <label>
                     Tipo de clase:

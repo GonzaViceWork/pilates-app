@@ -20,7 +20,8 @@ class ClientSerializer(serializers.ModelSerializer):
 
 class SessionSerializer(serializers.ModelSerializer):
     clients = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Client.objects.all()
+        many=True, queryset=Client.objects.all(),
+        required=False
     )
     attended_clients = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Client.objects.all(),
@@ -28,12 +29,14 @@ class SessionSerializer(serializers.ModelSerializer):
     )
     session_type_display = serializers.CharField(source="get_session_type_display", read_only=True)
     status_display = serializers.CharField(source="get_status_display", read_only=True)
+    room_display = serializers.CharField(source="get_room_display", read_only=True)
 
     class Meta:
         model = Session
         fields = [
-            'id', 'date', 'session_type', 'session_type_display', 
-            'status', 'status_display', 'clients', 'attended_clients'
+            'id', 'date', 'room', 'room_display', 'session_type',
+            'session_type_display', 'status', 'status_display', 'clients',
+            'attended_clients'
         ]
 
 

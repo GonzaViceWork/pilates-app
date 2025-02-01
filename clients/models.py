@@ -18,6 +18,7 @@ class AttendanceLog(models.Model):
         ("add", "Paquete Asignado"),
         ("deduct", "Clase Asistida"),
     ]
+
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="attendance_logs")
     action = models.CharField(max_length=10, choices=ACTION_TYPES)  # "Paquete asignado" o "Clase asistida"
     slots = models.IntegerField()  # Positivo o negativo
@@ -46,12 +47,17 @@ class Session(models.Model):
         ('pending', 'Pendiente'),
         ('finished', 'Terminada'),
     ]
+    ROOM_CHOICES = [
+        ('room_1', 'Sala 1'),
+        ('room_2', 'Sala 2'),
+    ]
 
     clients = models.ManyToManyField(Client, related_name="sessions", blank=True)
     date = models.DateTimeField()
     session_type = models.CharField(max_length=10, choices=SESSION_TYPES, default='group')
     status = models.CharField(max_length=10, choices=SESSION_STATUSES, default='pending')  # Estado de la sesión
     attended_clients = models.ManyToManyField(Client, related_name="attended_sessions", blank=True)
+    room = models.CharField(max_length=10, choices=ROOM_CHOICES, default='room_1')  # Nueva columna
 
     def __str__(self):
-        return f"{self.get_session_type_display()} - {self.date.strftime('%Y-%m-%d %H:%M')} - {self.get_status_display()}"
+        return f"{self.get_session_type_display()} - {self.date.strftime('%Y-%m-%d %H:%M')} - {self.get_status_display()} en {self.get_room_display()}"

@@ -6,7 +6,7 @@ from .models import Client, Session, Package, AttendanceLog
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
     list_display = ("first_name", "last_name", "cn_dni", "email", "phone", "available_slots")
-    search_fields = ("first_name", "last_name", "email", "cn_dni")
+    search_fields = ("first_name", "last_name", "cn_dni", "email")
     list_filter = ("available_slots",)
     ordering = ("last_name", "first_name")
 
@@ -14,9 +14,9 @@ class ClientAdmin(admin.ModelAdmin):
 # Personalización de la interfaz del modelo Session
 @admin.register(Session)
 class SessionAdmin(admin.ModelAdmin):
-    list_display = ("date", "session_type_display", "status_display", "get_clients", "get_attended_clients")
+    list_display = ("date", "session_type_display", "status_display", "room_display", "get_clients", "get_attended_clients")
     search_fields = ("date", "clients__first_name", "clients__last_name")
-    list_filter = ("session_type", "status", "date")
+    list_filter = ("session_type", "status", "date", "room")
     ordering = ("date",)
 
     def get_clients(self, obj):
@@ -34,6 +34,10 @@ class SessionAdmin(admin.ModelAdmin):
     def status_display(self, obj):
         return obj.get_status_display()
     status_display.short_description = "Estado"
+    
+    def room_display(self, obj):
+        return obj.get_room_display()
+    room_display.short_description = "Sala" 
 
 
 # Personalización de la interfaz del modelo Package

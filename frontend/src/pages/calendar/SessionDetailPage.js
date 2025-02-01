@@ -73,7 +73,7 @@ const SessionDetailPage = () => {
             }));
 
             alert("Asistencia registrada correctamente.");
-            navigate("/calendar/");  // Redirigir al calendario
+            navigate(`/calendar/${session_id}`);  // Redirigir al calendario
         } catch (error) {
             console.error("Error al registrar la asistencia:", error);
             alert("Hubo un error al registrar la asistencia.");
@@ -92,6 +92,11 @@ const SessionDetailPage = () => {
         return session.attended_clients.includes(clientId); // Comprobar si el cliente ya ha asistido
     };
 
+    const roomNames = {
+        "room_1": "Sala 1",
+        "room_2": "Sala 2"
+    };
+
     return (
         <div className="session-detail-container">
             <h1 className="session-title">Sesión del {new Date(session.date).toLocaleDateString()}</h1>
@@ -99,6 +104,7 @@ const SessionDetailPage = () => {
             <div className="session-info">
                 <p>Hora: {new Date(session.date).toLocaleTimeString()}</p>
                 <p>Tipo: {session.session_type === "group" ? "Grupal" : "Privada"}</p>
+                <p>Sala: {roomNames[session.room] || "No especificada"}</p>
                 
                 <p className={`session-status ${session.status}`}>
                     Estado: {session.status === "pending" ? "Pendiente" : "Terminada"}
@@ -117,7 +123,7 @@ const SessionDetailPage = () => {
                 ) : (
                     <>
                         <h3>Asistencia</h3>
-                        <p>Marca los clientes que asistieron a esta sesión:</p>
+                        <p>Marca los clientes que asistieron a esta sesión en {roomNames[session.room] || "No especificada"}:</p>
                         <ul className="assistance-list">
                             {assignedClients.map((client) => (
                                 <li key={client.id}>
