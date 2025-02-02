@@ -107,7 +107,7 @@ const EditClientPage = () => {
                     />
                 </div>
                 <div style={styles.inputGroup}>
-                    <label style={styles.label}>DNI:</label>
+                    <label style={styles.label}>CE/DNI:</label>
                     <input
                         type="text"
                         name="cn_dni"

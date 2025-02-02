@@ -83,7 +83,7 @@ const ClientsPage = () => {
                         <th style={styles.th}>Email</th>
                         <th style={styles.th}>Teléfono</th>
                         <th style={styles.th}>Clases</th>
-                        <th style={styles.th}>DNI</th>
+                        <th style={styles.th}>CE/DNI</th>
                         <th style={styles.th}>Acciones</th>
                     </tr>
                 </thead>

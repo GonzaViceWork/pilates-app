@@ -2,9 +2,17 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
+import 'moment/locale/es'; // Importar la configuración regional en español
 import api from "../../api/axios";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./CalendarPage.css"; // Importar el archivo de estilos
+
+moment.updateLocale('es', {
+    week: {
+        dow: 1, // Establecer el primer día de la semana en lunes
+        doy: 4, // Establecer el día de año que representa el inicio de la primera semana del año
+    },
+});
 
 const localizer = momentLocalizer(moment);
 
@@ -27,7 +35,7 @@ const CalendarPage = () => {
                 ...session,
                 title: `${session.session_type === "group" ? "Sesión Grupal" : "Sesión Privada"} - ${moment(session.date).format("DD-MM-YYYY h:mm A")}`,
                 start: new Date(session.date),
-                end: new Date(session.date),
+                end: new Date(moment(session.date).add(1, 'hours')),
             }));
             setSessions(formattedSessions);
         } catch (error) {

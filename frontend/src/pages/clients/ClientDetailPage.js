@@ -2,8 +2,18 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
+import 'moment/locale/es'; // Importar la configuración regional en español
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import api from "../../api/axios";
+
+moment.updateLocale('es', {
+    week: {
+        dow: 1, // Establecer el primer día de la semana en lunes
+        doy: 4, // Establecer el día de año que representa el inicio de la primera semana del año
+    },
+});
+
+const localizer = momentLocalizer(moment);
 
 const ClientDetailPage = () => {
     const navigate = useNavigate();
@@ -13,8 +23,6 @@ const ClientDetailPage = () => {
     const [attendanceLogs, setAttendanceLogs] = useState([]);
     const [packages, setPackages] = useState([]);
     const [selectedPackage, setSelectedPackage] = useState("");
-
-    const localizer = momentLocalizer(moment);
 
     const handleBack = () => {
         navigate(`/clients`);
@@ -32,12 +40,17 @@ const ClientDetailPage = () => {
     const fetchSessions = useCallback(async () => {
         try {
             const response = await api.get(`/sessions/?client_id=${client_id}`);
-            console.log(response.data); // Ver la respuesta completa
             const assignedSessions = response.data.filter(session =>
                 session.clients?.includes(parseInt(client_id))  // Verifica si 'client.id' existe
             );
             // console.log(assignedSessions);  // Verifica las sesiones filtradas
-            setSessions(assignedSessions);
+            const formattedSessions = assignedSessions.map((session) => ({
+                ...session,
+                title: `${session.session_type === "group" ? "Sesión Grupal" : "Sesión Privada"} - ${moment(session.date).format("DD-MM-YYYY h:mm A")}`,
+                start: new Date(session.date),
+                end: new Date(moment(session.date).add(1, 'hours')), // Añadir una hora a la fecha de inicio
+            }));
+            setSessions(formattedSessions);
         } catch (error) {
             console.error("Error al obtener las sesiones:", error);
         }
@@ -93,7 +106,7 @@ const ClientDetailPage = () => {
         id: session.id,
         title: `${session.session_type === "group" ? "Sesión Grupal" : "Sesión Privada"} - ${moment(session.date).format("DD-MM-YYYY h:mm A")}`,
         start: new Date(session.date),
-        end: new Date(session.date),
+        end: new Date(moment(session.date).add(1, 'hours')),
     }));
 
     return (
@@ -104,7 +117,7 @@ const ClientDetailPage = () => {
             <div style={styles.infoContainer}>
                 <p><strong>Email:</strong> {client.email}</p>
                 <p><strong>Teléfono:</strong> {client.phone}</p>
-                <p><strong>DNI:</strong> {client.cn_dni}</p>
+                <p><strong>CE/DNI:</strong> {client.cn_dni}</p>
                 <p><strong>Clases disponibles:</strong> {client.available_slots}</p>
             </div>
 
