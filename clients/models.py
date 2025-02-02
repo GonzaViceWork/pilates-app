@@ -4,7 +4,7 @@ from django.db import models
 class Client(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    cn_dni = models.CharField(max_length=15, unique=True)  # CN/DNI único para peruanos y extranjeros
+    cn_dni = models.CharField(max_length=15, unique=True)  # CE/DNI único para peruanos y extranjeros
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=15, blank=True, null=True)
     available_slots = models.PositiveIntegerField(default=0)  # Clases disponibles

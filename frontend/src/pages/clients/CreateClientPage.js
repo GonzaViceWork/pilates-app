@@ -90,7 +90,7 @@ const CreateClientPage = () => {
                     />
                 </div>
                 <div style={styles.inputGroup}>
-                    <label htmlFor="cn_dni" style={styles.label}>CN/DNI:</label>
+                    <label htmlFor="cn_dni" style={styles.label}>CE/DNI:</label>
                     <input
                         type="text"
                         id="cn_dni"

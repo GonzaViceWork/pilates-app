@@ -26,11 +26,13 @@ const ClientsPage = () => {
     };
 
     const handleDelete = async (id) => {
-        try {
-            await api.delete(`/clients/${id}/`);
-            setClients(clients.filter((client) => client.id !== id));
-        } catch (error) {
-            console.error("Error al eliminar cliente:", error);
+        if (window.confirm("¿Seguro que quieres eliminar este cliente?")) {
+            try {
+                await api.delete(`/clients/${id}/`);
+                setClients(clients.filter((client) => client.id !== id));
+            } catch (error) {
+                console.error("Error al eliminar cliente:", error);
+            }
         }
     };
 

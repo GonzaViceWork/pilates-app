@@ -24,7 +24,7 @@ const PackagePage = () => {
                 await api.delete(`/packages/${id}/`);
                 setPackages(packages.filter(pkg => pkg.id !== id));
             } catch (error) {
-                console.error("Error deleting package:", error);
+                console.error("Error al eliminar paquete:", error);
             }
         }
     };
