@@ -7,7 +7,7 @@ class Client(models.Model):
     cn_dni = models.CharField(max_length=15, unique=True)  # CN/DNI único para peruanos y extranjeros
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=15, blank=True, null=True)
-    available_slots = models.PositiveIntegerField(default=0)  # Cupos disponibles
+    available_slots = models.PositiveIntegerField(default=0)  # Clases disponibles
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.cn_dni})"

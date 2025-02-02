@@ -105,7 +105,7 @@ const ClientDetailPage = () => {
                 <p><strong>Email:</strong> {client.email}</p>
                 <p><strong>Teléfono:</strong> {client.phone}</p>
                 <p><strong>DNI:</strong> {client.cn_dni}</p>
-                <p><strong>Cupos disponibles:</strong> {client.available_slots}</p>
+                <p><strong>Clases disponibles:</strong> {client.available_slots}</p>
             </div>
 
             <Link to={`/clients/${client_id}/edit`}>
@@ -144,7 +144,7 @@ const ClientDetailPage = () => {
                 <thead>
                     <tr>
                         <th>Acción</th>
-                        <th>Cupos</th>
+                        <th>Clases</th>
                         <th>Descripción</th>
                         <th>Fecha</th>
                     </tr>
@@ -177,7 +177,7 @@ const ClientDetailPage = () => {
                     <option value="">Selecciona un paquete</option>
                     {packages.map((pkg) => (
                         <option key={pkg.id} value={pkg.id}>
-                            {pkg.name} ({pkg.slot_count} cupos)
+                            {pkg.name} ({pkg.slot_count} clases)
                         </option>
                     ))}
                 </select>

@@ -28,7 +28,7 @@ class ClientViewSet(viewsets.ModelViewSet):
         except Package.DoesNotExist:
             return Response({"error": "Paquete no encontrado."}, status=status.HTTP_404_NOT_FOUND)
 
-        # Actualizar los cupos del cliente
+        # Actualizar las clases del cliente
         client.available_slots += package.slot_count
         client.save()
 
@@ -92,7 +92,7 @@ class SessionViewSet(viewsets.ModelViewSet):
         }
         session_type_translated = session_type_map.get(session.session_type, session.session_type)
 
-        # Descontar un cupo de cada cliente que asistió
+        # Descontar una clase de cada cliente que asistió
         for client in valid_clients:
             if client.available_slots > 0:
                 client.available_slots -= 1
@@ -102,7 +102,7 @@ class SessionViewSet(viewsets.ModelViewSet):
                 AttendanceLog.objects.create(
                     client=client,
                     action="deduct",
-                    slots=-1,  # Disminuir un cupo
+                    slots=-1,  # Disminuir una clase
                     description=f"Sesión {session_type_translated} - {formatted_date} en {session.get_room_display()}",
                 )
 

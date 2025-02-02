@@ -102,7 +102,7 @@ const CreateClientPage = () => {
                     />
                 </div>
                 <div style={styles.inputGroup}>
-                    <label htmlFor="available_slots" style={styles.label}>Cupos Disponibles:</label>
+                    <label htmlFor="available_slots" style={styles.label}>Clases Disponibles:</label>
                     <input
                         type="number"
                         id="available_slots"
