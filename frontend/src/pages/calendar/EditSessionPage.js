@@ -8,7 +8,7 @@ const EditSessionPage = () => {
     const [sessionData, setSessionData] = useState({
         date: moment().tz("America/Lima").format("YYYY-MM-DDTHH:mm"),
         session_type: "group",
-        room: "room_1",
+        room: "room_301",
         status: "pending",
         clients: [],
     });
@@ -103,8 +103,8 @@ const EditSessionPage = () => {
                 <label>
                     Sala:
                     <select value={sessionData.room} onChange={(e) => setSessionData({ ...sessionData, room: e.target.value })}>
-                        <option value="room_1">Sala 1</option>
-                        <option value="room_2">Sala 2</option>
+                        <option value="room_201">Sala 201</option>
+                        <option value="room_301">Sala 301</option>
                     </select>
                 </label>
                 <label>

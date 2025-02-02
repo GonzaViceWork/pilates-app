@@ -10,7 +10,7 @@ const CreateSessionPage = () => {
         session_type: "group",
         status: "pending",
         clients: [],
-        room: "room_1",
+        room: "room_301",
     });
     const [clients, setClients] = useState([]);
     const [selectedClients, setSelectedClients] = useState([]);
@@ -93,8 +93,8 @@ const CreateSessionPage = () => {
                         value={newEvent.room}
                         onChange={(e) => setNewEvent({ ...newEvent, room: e.target.value })}
                     >
-                        <option value="room_1">Sala 1</option>
-                        <option value="room_2">Sala 2</option>
+                        <option value="room_201">Sala 201</option>
+                        <option value="room_301">Sala 301</option>
                     </select>
                 </label>
 

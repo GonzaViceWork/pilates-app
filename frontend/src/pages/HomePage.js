@@ -3,7 +3,7 @@ import React from "react";
 const HomePage = () => {
     return (
         <div style={styles.container}>
-            <h1>Bienvenido a Pilates Verónica Studio</h1>
+            <h1>Bienvenid@ a Pilates Verónica Studio</h1>
             <p>Administra clientes, sesiones y paquetes con facilidad.</p>
             
             <h2>📌 ¿Qué puedes hacer aquí?</h2>

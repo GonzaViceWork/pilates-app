@@ -48,8 +48,8 @@ class Session(models.Model):
         ('finished', 'Terminada'),
     ]
     ROOM_CHOICES = [
-        ('room_1', 'Sala 1'),
-        ('room_2', 'Sala 2'),
+        ('room_201', 'Sala 201'),
+        ('room_301', 'Sala 301'),
     ]
 
     clients = models.ManyToManyField(Client, related_name="sessions", blank=True)
@@ -57,7 +57,7 @@ class Session(models.Model):
     session_type = models.CharField(max_length=10, choices=SESSION_TYPES, default='group')
     status = models.CharField(max_length=10, choices=SESSION_STATUSES, default='pending')  # Estado de la sesión
     attended_clients = models.ManyToManyField(Client, related_name="attended_sessions", blank=True)
-    room = models.CharField(max_length=10, choices=ROOM_CHOICES, default='room_1')  # Nueva columna
+    room = models.CharField(max_length=10, choices=ROOM_CHOICES, default='room_301')  # Nueva columna
 
     def __str__(self):
         return f"{self.get_session_type_display()} - {self.date.strftime('%Y-%m-%d %H:%M')} - {self.get_status_display()} en {self.get_room_display()}"

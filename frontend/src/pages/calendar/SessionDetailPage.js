@@ -93,8 +93,8 @@ const SessionDetailPage = () => {
     };
 
     const roomNames = {
-        "room_1": "Sala 1",
-        "room_2": "Sala 2"
+        "room_201": "Sala 201",
+        "room_301": "Sala 301"
     };
 
     return (
